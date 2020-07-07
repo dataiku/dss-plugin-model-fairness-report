@@ -19,9 +19,9 @@ class ModelFairnessMetric(object):
                 ModelFairnessMetric.predictive_rate_parity.__name__]
 
     @staticmethod
-    def _compute_confusion_matrix_metrics(y_true, y_pred, advantage_outcome, sample_weight=None):
-        label_list = [x for x in np.unique(y_true) if x != advantage_outcome]
-        label_list.append(advantage_outcome)
+    def _compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight=None):
+        label_list = [x for x in np.unique(y_true) if x != advantageous_outcome]
+        label_list.append(advantageous_outcome)
         conf_matrix = confusion_matrix(y_true, y_pred, labels=label_list, sample_weight=sample_weight)
 
         true_negative = conf_matrix[0][0]
@@ -32,44 +32,41 @@ class ModelFairnessMetric(object):
         return true_negative, false_negative, true_positive, false_positive
 
     @staticmethod
-    def demographic_parity(y_true, y_pred, advantage_outcome, sample_weight=None):
+    def demographic_parity(y_true, y_pred, advantageous_outcome, sample_weight=None):
         """
         demographic_parity just care about y_pred, but we keep y_true to have a homogene api
         """
-        return np.sum(y_pred == advantage_outcome, dtype=float) / len(y_pred)
+        return np.sum(y_pred == advantageous_outcome, dtype=float) / len(y_pred)
 
     @staticmethod
-    def equality_of_opportunity(y_true, y_pred, advantage_outcome, sample_weight=None):
-        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantage_outcome, sample_weight)
+    def equality_of_opportunity(y_true, y_pred, advantageous_outcome, sample_weight=None):
+        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
         # Sensitivity, hit rate, recall, or true positive rate
         true_positive_rate = true_positive / (true_positive + false_negative)
 
         return true_positive_rate
 
-
     @staticmethod
-    def equalized_odds(y_true, y_pred, advantage_outcome, sample_weight=None):
-        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantage_outcome, sample_weight)
+    def equalized_odds(y_true, y_pred, advantageous_outcome, sample_weight=None):
+        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
         true_positive_rate = true_positive / (true_positive + false_negative)
         false_positive_rate = false_positive / (true_negative + false_positive)
         return true_positive_rate, false_positive_rate
 
     @staticmethod
-    def predictive_rate_parity(y_true, y_pred, advantage_outcome, sample_weight=None):
-        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantage_outcome, sample_weight)
+    def predictive_rate_parity(y_true, y_pred, advantageous_outcome, sample_weight=None):
+        true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
         # Precision or positive predictive value
         positive_predictive_value = true_positive / (true_positive + false_positive)
         return positive_predictive_value
 
 
 class ModelFairnessMetricReport(object):
-    def __init__(self, y_true, y_pred, sensitive_features, reference_group=None, advantage_outcome=None,
-                 sample_weight=None):
+    def __init__(self, y_true, y_pred, sensitive_feature_values, advantageous_outcome=None, sample_weight=None):
         self.y_true = y_true  # 1D array
         self.y_pred = y_pred  # 1D array
-        self.sensitive_features = sensitive_features  # 1D array
-        self.reference_group = reference_group  # string
-        self.advantage_outcome = advantage_outcome  # string
+        self.sensitive_feature_values = sensitive_feature_values  # 1D array
+        self.advantageous_outcome = advantageous_outcome  # string
         self.sample_weight = sample_weight  # 1D array
 
     def compute_metric_per_group(self, metric_function):
@@ -79,8 +76,8 @@ class ModelFairnessMetricReport(object):
         return group_summary(metric_function,
                              self.y_true,
                              self.y_pred,
-                             sensitive_features=self.sensitive_features,
-                             advantage_outcome=self.advantage_outcome)
+                             sensitive_features=self.sensitive_feature_values,
+                             advantageous_outcome=self.advantageous_outcome)
 
     def compute_group_difference_from_summary(self, summary, reference_group=DkuFairnessConstants.OVERALL):
 

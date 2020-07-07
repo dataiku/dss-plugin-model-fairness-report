@@ -1,4 +1,4 @@
 # coding: utf-8
-from dku_model_fairness_report.drift_analyzer import DriftAnalyzer
+from dku_model_fairness_report.fairness_metric_report import ModelFairnessMetric
 from dku_model_fairness_report.model_accessor import ModelAccessor
-from dku_model_fairness_report.model_drift_constants import ModelDriftConstants
+from dku_model_fairness_report.constants import DkuFairnessConstants

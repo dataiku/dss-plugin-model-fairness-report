@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, ExtraTreesClassifier
 from sklearn.tree import DecisionTreeClassifier
 from dku_model_fairness_report.model_tools import SurrogateModel
-from dku_model_fairness_report.constants import ModelDriftConstants
+from dku_model_fairness_report.constants import DkuFairnessConstants
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +19,12 @@ class ModelAccessor(object):
         """
         Wrap the prediction type accessor of the model
         """
-        if ModelDriftConstants.CLASSIFICATION_TYPE in self.model_handler.get_prediction_type():
-            return ModelDriftConstants.CLASSIFICATION_TYPE
-        elif ModelDriftConstants.REGRRSSION_TYPE in self.model_handler.get_prediction_type():
-            return ModelDriftConstants.REGRRSSION_TYPE
+        if DkuFairnessConstants.CLASSIFICATION_TYPE in self.model_handler.get_prediction_type():
+            return DkuFairnessConstants.CLASSIFICATION_TYPE
+        elif DkuFairnessConstants.REGRRSSION_TYPE in self.model_handler.get_prediction_type():
+            return DkuFairnessConstants.REGRRSSION_TYPE
         else:
-            return ModelDriftConstants.CLUSTERING_TYPE
+            return DkuFairnessConstants.CLUSTERING_TYPE
             
     def get_target_variable(self):
         """
@@ -32,7 +32,7 @@ class ModelAccessor(object):
         """
         return self.model_handler.get_target_variable()
 
-    def get_original_test_df(self, limit=ModelDriftConstants.MAX_NUM_ROW):
+    def get_original_test_df(self, limit=DkuFairnessConstants.MAX_NUM_ROW):
         try:
             return self.model_handler.get_test_df()[0][:limit]
         except Exception as e:
@@ -45,7 +45,7 @@ class ModelAccessor(object):
     def get_predictor(self):
         return self.model_handler.get_predictor()
 
-    def get_feature_importance(self, cumulative_percentage_threshold=ModelDriftConstants.FEAT_IMP_CUMULATIVE_PERCENTAGE_THRESHOLD):
+    def get_feature_importance(self, cumulative_percentage_threshold=DkuFairnessConstants.FEAT_IMP_CUMULATIVE_PERCENTAGE_THRESHOLD):
         """
         :param cumulative_percentage_threshold: only return the top n features whose sum of importance reaches this threshold
         :return:
@@ -62,22 +62,22 @@ class ModelAccessor(object):
             original_test_df = self.get_original_test_df()
             predictions_on_original_test_df = self.get_predictor().predict(original_test_df)
             surrogate_df = original_test_df[self.get_selected_features()]
-            surrogate_df[ModelDriftConstants.SURROGATE_TARGET] = predictions_on_original_test_df['prediction']
-            surrogate_model.fit(surrogate_df, ModelDriftConstants.SURROGATE_TARGET)
+            surrogate_df[DkuFairnessConstants.SURROGATE_TARGET] = predictions_on_original_test_df['prediction']
+            surrogate_model.fit(surrogate_df, DkuFairnessConstants.SURROGATE_TARGET)
             feature_names = surrogate_model.get_features()
             feature_importances = surrogate_model.clf.feature_importances_
 
         feature_importance = []
         for feature_name, feat_importance in zip(feature_names, feature_importances):
             feature_importance.append({
-                ModelDriftConstants.FEATURE: feature_name,
-                ModelDriftConstants.IMPORTANCE: 100 * feat_importance / sum(feature_importances)
+                DkuFairnessConstants.FEATURE: feature_name,
+                DkuFairnessConstants.IMPORTANCE: 100 * feat_importance / sum(feature_importances)
             })
 
-        dfx = pd.DataFrame(feature_importance).sort_values(by=ModelDriftConstants.IMPORTANCE, ascending=False).reset_index(drop=True)
-        dfx[ModelDriftConstants.CUMULATIVE_IMPORTANCE] = dfx[ModelDriftConstants.IMPORTANCE].cumsum()
-        dfx_top = dfx.loc[dfx[ModelDriftConstants.CUMULATIVE_IMPORTANCE] <= cumulative_percentage_threshold]
-        return dfx_top.rename_axis(ModelDriftConstants.RANK).reset_index().set_index(ModelDriftConstants.FEATURE)
+        dfx = pd.DataFrame(feature_importance).sort_values(by=DkuFairnessConstants.IMPORTANCE, ascending=False).reset_index(drop=True)
+        dfx[DkuFairnessConstants.CUMULATIVE_IMPORTANCE] = dfx[DkuFairnessConstants.IMPORTANCE].cumsum()
+        dfx_top = dfx.loc[dfx[DkuFairnessConstants.CUMULATIVE_IMPORTANCE] <= cumulative_percentage_threshold]
+        return dfx_top.rename_axis(DkuFairnessConstants.RANK).reset_index().set_index(DkuFairnessConstants.FEATURE)
 
 
     def get_selected_features(self):
