@@ -42,22 +42,21 @@ class ModelFairnessMetric(object):
     def equality_of_opportunity(y_true, y_pred, advantageous_outcome, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
         # Sensitivity, hit rate, recall, or true positive rate
-        true_positive_rate = true_positive / (true_positive + false_negative)
-
+        true_positive_rate = np.round(true_positive / (true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return true_positive_rate
 
     @staticmethod
     def equalized_odds(y_true, y_pred, advantageous_outcome, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
-        true_positive_rate = true_positive / (true_positive + false_negative)
-        false_positive_rate = false_positive / (true_negative + false_positive)
+        true_positive_rate = np.round(true_positive / (true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        false_positive_rate = np.round(false_positive / (true_negative + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return true_positive_rate, false_positive_rate
 
     @staticmethod
     def predictive_rate_parity(y_true, y_pred, advantageous_outcome, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight)
         # Precision or positive predictive value
-        positive_predictive_value = true_positive / (true_positive + false_positive)
+        positive_predictive_value = np.round(true_positive / (true_positive + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return positive_predictive_value
 
 
@@ -68,6 +67,16 @@ class ModelFairnessMetricReport(object):
         self.sensitive_feature_values = sensitive_feature_values  # 1D array
         self.advantageous_outcome = advantageous_outcome  # string
         self.sample_weight = sample_weight  # 1D array
+        self._check()
+
+    def _check(self):
+        possible_outcomes = set(self.y_true.unique()).union(set(self.y_pred.unique()))
+        if self.advantageous_outcome is not None and self.advantageous_outcome not in possible_outcomes:
+            raise ValueError('The chosen advantageous outcome, "{}", does not exist in either y_true or y_pred.'.format(self.advantageous_outcome))
+
+    def _check_reference_group(self, reference_group, summary):
+        if reference_group not in summary.get(DkuFairnessConstants.BY_GROUP).keys():
+            raise ValueError('The chosen reference group "{0}" does not exist in the input metric summary.'.format(reference_group))
 
     def compute_metric_per_group(self, metric_function):
         """
@@ -79,41 +88,32 @@ class ModelFairnessMetricReport(object):
                              sensitive_features=self.sensitive_feature_values,
                              advantageous_outcome=self.advantageous_outcome)
 
-    def compute_group_difference_from_summary(self, summary, reference_group=DkuFairnessConstants.OVERALL):
-
-        difference_by_group = {}
+    def _get_reference_group(self, reference_group, summary):
         # if there is no reference group, take the overall metric
         if reference_group == DkuFairnessConstants.OVERALL:
             reference_metrics = summary.get(DkuFairnessConstants.OVERALL)
         else:
-            if reference_group not in summary.get(DkuFairnessConstants.BY_GROUP).keys():
-                raise ValueError(
-                    'The chosen reference group "{0}" is not in the input metric summary.'.format(reference_group))
+            self._check_reference_group(reference_group, summary)
             reference_metrics = summary[DkuFairnessConstants.BY_GROUP][reference_group]
+        return np.array(reference_metrics)
 
+    def _compute_group_func_from_summary(self, summary, reference_group, func):
+        func_by_group = {}
+        reference_metrics = self._get_reference_group(reference_group, summary)
         for group, group_metrics in summary.get(DkuFairnessConstants.BY_GROUP).items():
-            difference_by_group[group] = np.array(group_metrics) - np.array(reference_metrics)
-
+            func_by_group[group] = np.round(func(group_metrics, reference_metrics), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         # TODO decide if it is a good idea to put overall metric here
-        difference_by_group[DkuFairnessConstants.OVERALL] = np.array(summary.get(DkuFairnessConstants.OVERALL)) - np.array(reference_metrics)
+        func_by_group[DkuFairnessConstants.OVERALL] = np.round(func(summary.get(DkuFairnessConstants.OVERALL), reference_metrics), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        return Bunch(reference_group=reference_group, by_group=func_by_group)
 
-        return Bunch(reference_group=reference_group, by_group=difference_by_group)
+    def compute_group_difference_from_summary(self, summary, reference_group=DkuFairnessConstants.OVERALL):
+        def diff_func(group_metric, reference_metric):
+            return group_metric - reference_metric
+        return self._compute_group_func_from_summary(summary, reference_group, diff_func)
 
     def compute_group_ratio_from_summary(self, summary, reference_group=DkuFairnessConstants.OVERALL):
-
-        ratio_by_group = {}
-        # if there is no reference group, take the overall metric
-        if reference_group == DkuFairnessConstants.OVERALL:
-            reference_metrics = summary.get(DkuFairnessConstants.OVERALL)
-        else:
-            if reference_group not in summary.get(DkuFairnessConstants.BY_GROUP).keys():
-                raise ValueError('The chosen reference group "{0}" is not in the input metric summary.'.format(reference_group))
-            reference_metrics = summary[DkuFairnessConstants.BY_GROUP][reference_group]
-
-        for group, group_metrics in summary.get(DkuFairnessConstants.BY_GROUP).items():
-            ratio_by_group[group] = np.array(group_metrics) / np.array(reference_metrics)
-
-        # TODO decide if it is a good idea to put overall metric here
-        ratio_by_group[DkuFairnessConstants.OVERALL] = np.array(summary.get(DkuFairnessConstants.OVERALL)) / np.array(reference_metrics)
-
-        return Bunch(reference_group=reference_group, by_group=ratio_by_group)
+        def ratio_func(group_metric, reference_metric):
+            if reference_metric == 0:
+                logger.warning('Reference metric value = 0. Ratio function will return nan or inf.')
+            return group_metric/reference_metric
+        return self._compute_group_func_from_summary(summary, reference_group, ratio_func)

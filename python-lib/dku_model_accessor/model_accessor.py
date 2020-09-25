@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 import pandas as pd
 from dku_model_accessor.constants import DkuModelAccessorConstants
 from dku_model_accessor.surrogate_model import SurrogateModel

@@ -20,7 +20,6 @@ class DkuModelAccessorConstants(object):
     CUMULATIVE_IMPORTANCE = 'cumulative_importance'
     FEATURE = 'feature'
     IMPORTANCE = 'importance'
-    CUMULATIVE_IMPORTANCE = 'cumulative_importance'
     RANK = 'rank'
     CLASS = 'class'
     PERCENTAGE = 'percentage'

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from dku_model_accessor.constants import DkuModelAccessorConstants
 from dku_model_accessor.preprocessing import Preprocessor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor

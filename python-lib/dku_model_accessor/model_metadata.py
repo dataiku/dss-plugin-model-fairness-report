@@ -2,7 +2,6 @@
 import json
 import os
 import sys
-
 from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 
 

@@ -28,5 +28,7 @@ class DkuFairnessConstants(object):
     ORIGINAL_DATASET = 'original_dataset'
     NEW_DATASET = 'new_dataset'
 
-    OVERALL = 'overall'
+    OVERALL = 'overall' # can not change as fairlearn returns this value
     BY_GROUP = 'by_group'
+
+    NUMBER_OF_DECIMALS = 3
