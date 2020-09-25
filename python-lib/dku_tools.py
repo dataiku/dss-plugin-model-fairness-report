@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
-import json
 import dataiku
 from dataiku.customrecipe import get_input_names_for_role, get_output_names_for_role
-from dku_model_fairness_report.constants import DkuFairnessConstants
-
 
 def process_timestamp(timestamp):
     """
