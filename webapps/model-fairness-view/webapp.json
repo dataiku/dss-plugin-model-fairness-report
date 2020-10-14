@@ -1,0 +1,19 @@
+{
+    "meta": {
+        "label": "Model fairness report",
+        "description": "Model fairness metrics",
+        "icon": "icon-anchor"
+    },
+    "baseType": "STANDARD",
+    "hasBackend": "true",
+    "standardWebAppLibraries": ["jquery", "dataiku", "font_awesome"],
+    "virtualWebAppAffinity": "PREFER_VIRTUAL",
+    "roles": [
+        {
+            "type": "SAVED_MODEL",
+            "targetParamsKey": "modelId",
+            "pathParamsKey": "versionId"
+        }
+    ],
+    "params":[]
+}

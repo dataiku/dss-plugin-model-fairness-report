@@ -116,7 +116,7 @@ class ModelFairnessMetricReport(object):
 
     def compute_group_ratio_from_summary(self, summary, reference_group=DkuFairnessConstants.OVERALL):
         def ratio_func(group_metric, reference_metric):
-            if any(reference_metric) == 0:
+            if any(np.array(reference_metric)) == 0:
                 logger.warning('Reference metric value = 0. Ratio function will return nan or inf.')
             return group_metric/reference_metric
         return self._compute_group_func_from_summary(summary, reference_group, ratio_func)

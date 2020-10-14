@@ -1,0 +1,152 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.5/chartjs-plugin-annotation.js"></script>
+<script src="https://cdn.rawgit.com/chartjs/Chart.js/master/samples/utils.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
+<link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
+<link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
+
+
+<body ng-app = "mainApp" ng-controller = "vizController" class="container">
+
+<div class="container">
+<div class="card-deck">
+  <div class="card info-box" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
+    <div class="card-body">
+      <h6 class="card-title small-title-sb">Demographic Parity</h6>
+      <p class="card-text text">
+           A classifier satisfies this definition if the predicted decision is independent of the protected attribute.
+      </p>
+    </div>
+    <div class="card-footer bg-transparent">
+        <h4 class="huge-title-sb">{{disparity.demographic_parity}}</h4>
+        <div class="text">Max disparity between groups</div>
+    </div>
+  </div>
+  <div class="card info-box" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
+    <div class="card-body">
+      <h6 class="card-title small-title-sb">Equalized Odds</h6>
+      <p class="card-text text">
+            A classifier satisfies this definition if protected and unprotected groups have equal <b><i>True Positive Rate</i></b> and equal <b>False Positive Rate</b>.
+      </p>
+    </div>
+    <div class="card-footer bg-transparent">
+        <h4 class="huge-title-sb">{{disparity.equalized_odds}}</h4>
+        <div class="text">Max disparity between groups</div>
+    </div>
+  </div>
+  <div class="card info-box" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; updateChart('equalityOfOpportunity')">
+    <div class="card-body">
+      <h6 class="card-title small-title-sb">Equality of Opportunity</h6>
+      <p class="card-text text">
+          A classifier satisfies this definition if protected and unprotected groups have equal <b><i>True Positive Rate</i></b>.
+        </p>
+    </div>
+    <div class="card-footer bg-transparent" >
+        <h4 class="huge-title-sb">{{disparity.equality_of_opportunity}}</h4>
+        <div class="text">Max disparity between groups</div>
+    </div>
+  </div>
+  <div class="card info-box" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; updateChart('predictiveRateParity')">
+    <div class="card-body">
+      <h6 class="card-title small-title-sb">Predictive Rate Parity</h6>
+      <p class="card-text text">
+        A classifier satisfies this definition if protected and unprotected groups have equal <b><i>Positive Predictive Value</i></b>.
+      </p>
+    </div>
+    <div class="card-footer bg-transparent">
+        <h4 class="huge-title-sb">{{disparity.predictive_rate_parity}}</h4>
+        <div class="text">Max disparity between groups</div>
+    </div>
+  </div>
+</div>
+
+<br></br>
+
+    <div class="text">
+        To handle overlapping borders within components (e.g., buttons and inputs in input groups), we use low single digit z-index values of 1, 2, and 3 for default, hover, and active states. On hover/focus/active, we bring a particular element to the forefront with a higher z-index value to show their border over the sibling elements.
+    </div>
+
+    <br></br>
+
+    <div class="grand-title-sb">
+        Equality of Opportunity
+    </div>
+</div>
+<hr/>
+
+    <div class="container" ng-repeat= "population in populations track by $index" ng-init="initChart('default')">
+    <div class="small-title-sb">{{population.name}} - 11% - (28213, 28922)</div>
+    <br></br>
+    <div class="row">
+        <div class="col-5">
+            <div>
+                <canvas id="bar-chart-{{ $index }}"></canvas>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card-group info-box-2 text-center">
+                <div class="card border-0 p-0" ng-class="{grayoutText: !['demographicParity'].includes(activeMetric) }">
+                    <div class="card-body">
+                      <h6 class="card-title text-sb">Positive Rate <br></br></h6>
+                      <p class="card-text text">
+                            Fraction of positive cases predicted
+                      </p>
+                    </div>
+                    <div class="card-footer bg-transparent title-sb">
+                        {{population.positive_rate}}
+                    </div>
+                </div>
+
+                <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'equalizedOdds'}">
+                    <div class="card-body">
+                      <h6 class="card-title text-sb">False Positive Rate <br></br> </h6>
+                      <p class="card-text text">
+                            Fraction of negative cases correctly predicted to be in the negative class out of all actual negative cases
+                      </p>
+                    </div>
+                    <div class="card-footer bg-transparent title-sb">
+                        {{population.false_positive_rate}}
+                    </div>
+                </div>
+
+                <div class="card border-0" ng-class="{grayoutText: !['equalityOfOpportunity', 'equalizedOdds'].includes(activeMetric) }">
+                    <div class="card-body">
+                      <h6 class="card-title text-sb">True Positive Rate <br></br></h6>
+                      <p class="card-text text">
+                            Fraction of positive cases correctly predicted to be in the positive class out of all actual positive cases
+                      </p>
+                    </div>
+                    <div class="card-footer bg-transparent title-sb">
+                        {{population.true_positive_rate}}
+                    </div>
+                </div>
+
+
+                <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'predictiveRateParity'}">
+                    <div class="card-body">
+                      <h6 class="card-title text-sb">Positive Predictive Value</h6>
+                      <p class="card-text text">
+                            Fraction of positive cases correctly predicted to be in the positive class out of all predicted positive cases
+                      </p>
+                    </div>
+                    <div class="card-footer bg-transparent title-sb">
+                        {{population.positive_predictive_value}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+</div>
+</body>
+
+
+
+
+
+
+
+
