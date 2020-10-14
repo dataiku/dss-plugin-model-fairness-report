@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
 
 
+
 <body ng-app = "mainApp" ng-controller = "vizController" class="container">
 
 <div class="container">
@@ -27,7 +28,7 @@
   </div>
   <div class="card info-box" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
     <div class="card-body">
-      <h6 class="card-title small-title-sb">Equalized Odds</h6>
+      <h6 class="card-title small-title-sb">Equalized Odds<br></br></h6>
       <p class="card-text text">
             A classifier satisfies this definition if protected and unprotected groups have equal <b><i>True Positive Rate</i></b> and equal <b>False Positive Rate</b>.
       </p>
@@ -102,7 +103,7 @@
 
                 <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'equalizedOdds'}">
                     <div class="card-body">
-                      <h6 class="card-title text-sb">False Positive Rate <br></br> </h6>
+                      <h6 class="card-title text-sb">False Positive Rate</h6>
                       <p class="card-text text">
                             Fraction of negative cases correctly predicted to be in the negative class out of all actual negative cases
                       </p>
@@ -114,7 +115,7 @@
 
                 <div class="card border-0" ng-class="{grayoutText: !['equalityOfOpportunity', 'equalizedOdds'].includes(activeMetric) }">
                     <div class="card-body">
-                      <h6 class="card-title text-sb">True Positive Rate <br></br></h6>
+                      <h6 class="card-title text-sb">True Positive Rate</h6>
                       <p class="card-text text">
                             Fraction of positive cases correctly predicted to be in the positive class out of all actual positive cases
                       </p>
@@ -142,11 +143,3 @@
     <hr/>
 </div>
 </body>
-
-
-
-
-
-
-
-
