@@ -12,11 +12,19 @@ logger = logging.getLogger(__name__)
 class ModelFairnessMetric(object):
 
     @staticmethod
-    def get_available_metrics():
+    def get_available_metric_names():
         return [ModelFairnessMetric.demographic_parity.__name__,
                 ModelFairnessMetric.equality_of_opportunity.__name__,
                 ModelFairnessMetric.equalized_odds.__name__,
                 ModelFairnessMetric.predictive_rate_parity.__name__]
+
+    @staticmethod
+    def get_available_metric_functions():
+        return [ModelFairnessMetric.demographic_parity,
+                ModelFairnessMetric.equality_of_opportunity,
+                ModelFairnessMetric.equalized_odds,
+                ModelFairnessMetric.predictive_rate_parity
+            ]
 
     @staticmethod
     def _compute_confusion_matrix_metrics(y_true, y_pred, advantageous_outcome, sample_weight=None):
@@ -36,7 +44,7 @@ class ModelFairnessMetric(object):
         """
         demographic_parity just care about y_pred, but we keep y_true to have a homogene api
         """
-        return np.sum(y_pred == advantageous_outcome, dtype=float) / len(y_pred)
+        return np.round(np.sum(y_pred == advantageous_outcome, dtype=float) / len(y_pred), DkuFairnessConstants.NUMBER_OF_DECIMALS)
 
     @staticmethod
     def equality_of_opportunity(y_true, y_pred, advantageous_outcome, sample_weight=None):

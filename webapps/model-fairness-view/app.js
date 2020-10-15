@@ -1,56 +1,68 @@
 var mainApp = angular.module("mainApp", []);
 mainApp.controller('vizController', function($scope, $http, $timeout) {
-       $scope.activeMetric = 'demographicParity';    
-        $scope.data = {"Female": {"predicted_0_true_0": [66.406, 10.734, 5.529, 3.899, 3.232, 2.755, 2.202, 1.716, 0.801, 0.0], "predicted_0_true_1": [0.038, 0.095, 0.124, 0.133, 0.133, 0.229, 0.238, 0.257, 0.305, 0.0], "predicted_1_true_0": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.21, 0.477], "predicted_1_true_1": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.162, 0.324]}, "Male": {"predicted_0_true_0": [43.144, 8.502, 5.866, 5.626, 5.199, 4.814, 4.522, 4.428, 3.334, 0.0], "predicted_0_true_1": [0.052, 0.083, 0.104, 0.229, 0.24, 0.469, 0.5, 0.813, 1.084, 0.0], "predicted_1_true_0": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.927, 3.49], "predicted_1_true_1": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.458, 6.116]}}
-        $scope.population_list = Object.keys($scope.data);
-        $scope.disparity = {'Female': 0.0, 'Male': 0.41};
-        $scope.disparity = {
-            "demographic_parity": 0.8,
-            "equalized_odds": 0.95,
-            "equality_of_opportunity": 0.245,
-            "predictive_rate_parity": 0.05
+
+        $http.get(getWebAppBackendUrl("get-column-list"))
+            .then(function(response){
+                $scope.columnList = response.data;
+                $scope.sensitiveColumn = response.data[0];
+                $scope.updateValueList();
+            }, function(e) {
+                dataiku.webappMessages.displayFatalError(e);
+            });
+
+
+        $http.get(getWebAppBackendUrl("get-outcome-list"))
+            .then(function(response){
+                $scope.outcomeList = response.data;
+                $scope.advantageousOutcome = $scope.outcomeList[0];
+            }, function(e) {
+                dataiku.webappMessages.displayFatalError(e);
+            });
+
+        $scope.updateValueList = function(){
+            $http.get(getWebAppBackendUrl("get-value-list/"+$scope.sensitiveColumn))
+                .then(function(response){
+                  $scope.valueList = response.data
+                  $scope.referenceGroup = $scope.valueList[0];
+            }, function(e) {
+                dataiku.webappMessages.displayFatalError(e);
+            });
         }
-        $scope.populations = [
-            { 
-                "name": "Female",
-                "positive_rate": 0.5,
-                "false_positive_rate": 0.6,
-                "true_positive_rate": 0.7,
-                "positive_predictive_value": 0.8
-            },
-            { 
-                "name": "Make",
-                "positive_rate": 0.8,
-                "false_positive_rate": 0.126,
-                "true_positive_rate": 0.749,
-                "positive_predictive_value": 0.801
-            }
-        ]
-        console.log('toto', $scope.populations);
-    
-    
+
+        $scope.activeMetric = 'demographicParity';
         $scope.initChart = function(chosenMetric) {
         $timeout(function () {
             for (var i = 0; i < $scope.population_list.length; i++) {
                 var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.data[population]);
-            }                
+               draw(element, chosenMetric, $scope.histograms[population]);
+            }
         });
         }
-        
-       $scope.loadChart = function(idElement, chosenMetric) {
-        var value = idElement.score;
-        var element = $("#bar-chart-"+idElement.id);
-        draw(element, chosenMetric, $scope.data);
-       }
-       
+
        $scope.updateChart = function(chosenMetric) {
            for (var i = 0; i < $scope.population_list.length; i++) {
                var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.data[population]);            }  
+               draw(element, chosenMetric, $scope.histograms[population]);
+           }
        }
+
+        $scope.runAnalysis = function () {
+            markRunning(true);
+            $http.get(getWebAppBackendUrl("get-data"))
+                .then(function(response){
+                    $scope.populations = response.data.populations;
+                    $scope.histograms = response.data.histograms;
+                    $scope.disparity = response.data.disparity;
+                    $scope.population_list = Object.keys($scope.histograms);
+                    $scope.initChart('default');
+                    $('.result-state').show();
+                    markRunning(false);
+            }, function(e) {
+                dataiku.webappMessages.displayFatalError(e);
+            });
+        }
 });
 
 
@@ -58,10 +70,21 @@ var metricOpacityMapping = {
     'default': [1,1,1,1],
     'demographicParity': [1,1,1,1],
     'equalizedOdds': [1,1,1,1],
-    'equalityOfOpportunity': [0.1, 0.1, 1, 1], 
+    'equalityOfOpportunity': [0.1, 0.1, 1, 1],
     'predictiveRateParity': [1, 0.1, 1, 0.1]
 }
 
+
+function markRunning(running) {
+    if (running) {
+        $('.running-state').show();
+        $('.notrunning-state').hide();
+        $('.result-state').hide();
+    } else {
+        $('.running-state').hide();
+        $('.notrunning-state').show();
+    }
+}
 
 function draw(element, chosenMetric, data){
     // Return with commas in between

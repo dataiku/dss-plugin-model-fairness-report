@@ -7,11 +7,42 @@
 <link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
 <link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
 <link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
+<script src="/plugins/model-fairness-report/resource/dku-helpers.js"></script>
 
 
 
-<body ng-app = "mainApp" ng-controller = "vizController" class="container">
+<body ng-app = "mainApp" ng-controller = "vizController">
+<div class="view-content" style="margin: 8px;">
 
+<div class="container text">
+<div style="width: 1000px">
+        You need to provide the dataset containing new observations as input.
+        <div style="margin-top: 8px">
+            <a href="https://www.dataiku.com/community/plugins/info/model-drift.html" target="_blank">Plugin documentation <i class="icon-external-link"></i></a>
+        </div>
+</div>
+
+
+<div style="margin: 16px 0;">Compute fairness metrics on column
+    <select ng-model="sensitiveColumn" ng-options="col for col in columnList" ng-change="updateValueList()">
+        <option></option>
+    </select>
+with reference group
+        <select ng-model="referenceGroup" ng-options="val for val in valueList">
+            <option></option>
+        </select>
+ and advantageous outcome
+    <select ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
+        <option></option>
+    </select>
+    <a class="btn btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="float: right;">Compute</a>
+    <span class="running-state" style="display: none;">Please wait ...</span>
+</div>
+</div>
+
+<br></br>
+
+<div class="result-state" style="display: none;">
 <div class="container">
 <div class="card-deck">
   <div class="card info-box" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
@@ -23,7 +54,7 @@
     </div>
     <div class="card-footer bg-transparent">
         <h4 class="huge-title-sb">{{disparity.demographic_parity}}</h4>
-        <div class="text">Max disparity between groups</div>
+        <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
   <div class="card info-box" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
@@ -35,7 +66,7 @@
     </div>
     <div class="card-footer bg-transparent">
         <h4 class="huge-title-sb">{{disparity.equalized_odds}}</h4>
-        <div class="text">Max disparity between groups</div>
+        <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
   <div class="card info-box" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; updateChart('equalityOfOpportunity')">
@@ -47,7 +78,7 @@
     </div>
     <div class="card-footer bg-transparent" >
         <h4 class="huge-title-sb">{{disparity.equality_of_opportunity}}</h4>
-        <div class="text">Max disparity between groups</div>
+        <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
   <div class="card info-box" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; updateChart('predictiveRateParity')">
@@ -59,7 +90,7 @@
     </div>
     <div class="card-footer bg-transparent">
         <h4 class="huge-title-sb">{{disparity.predictive_rate_parity}}</h4>
-        <div class="text">Max disparity between groups</div>
+        <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
 </div>
@@ -78,7 +109,7 @@
 </div>
 <hr/>
 
-    <div class="container" ng-repeat= "population in populations track by $index" ng-init="initChart('default')">
+    <div class="container" ng-repeat= "population in populations track by $index">
     <div class="small-title-sb">{{population.name}} - 11% - (28213, 28922)</div>
     <br></br>
     <div class="row">
@@ -142,4 +173,15 @@
     </div>
     <hr/>
 </div>
+    </div>
+    </div>
 </body>
+
+
+
+
+
+
+
+
+    
