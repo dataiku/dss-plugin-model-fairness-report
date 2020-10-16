@@ -12,38 +12,30 @@
 
 
 <body ng-app = "mainApp" ng-controller = "vizController">
-<div class="view-content" style="margin: 8px;">
 
-<div class="container text">
-<div style="width: 1000px">
-        You need to provide the dataset containing new observations as input.
-        <div style="margin-top: 8px">
-            <a href="https://www.dataiku.com/community/plugins/info/model-drift.html" target="_blank">Plugin documentation <i class="icon-external-link"></i></a>
-        </div>
-</div>
-
-
-<div style="margin: 16px 0;">Compute fairness metrics on column
-    <select ng-model="sensitiveColumn" ng-options="col for col in columnList" ng-change="updateValueList()">
-        <option></option>
+<div class="view-content text-r">
+<div style="margin: 16px 0; padding-top:12px; padding-left: 8px">Compute fairness metrics on column
+    <select class="box text-r" ng-model="sensitiveColumn" ng-options="col for col in columnList" ng-change="updateValueList()">        <option></option>
     </select>
 with reference group
-        <select ng-model="referenceGroup" ng-options="val for val in valueList">
+        <select class="box text-r" ng-model="referenceGroup" ng-options="val for val in valueList">
             <option></option>
         </select>
  and advantageous outcome
-    <select ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
+    <select class="box text-r" ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
         <option></option>
     </select>
-    <a class="btn btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="float: right;">Compute</a>
+    <a class="btn btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="float: right; color: #FFFFFF;">COMPUTE</a>
     <span class="running-state" style="display: none;">Please wait ...</span>
 </div>
+    <br></br>
+
 </div>
 
-<br></br>
 
 <div class="result-state" style="display: none;">
-<div class="container">
+<div class="container-fluid">
+    <div class="row">
 <div class="card-deck">
   <div class="card info-box" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
     <div class="card-body">
@@ -94,6 +86,7 @@ with reference group
     </div>
   </div>
 </div>
+</div>
 
 <br></br>
 
@@ -109,7 +102,7 @@ with reference group
 </div>
 <hr/>
 
-    <div class="container" ng-repeat= "population in populations track by $index">
+    <div class="container-fluid" ng-repeat= "population in populations track by $index">
     <div class="small-title-sb">{{population.name}} - 11% - (28213, 28922)</div>
     <br></br>
     <div class="row">
@@ -174,14 +167,7 @@ with reference group
     <hr/>
 </div>
     </div>
-    </div>
 </body>
 
 
 
-
-
-
-
-
-    

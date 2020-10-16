@@ -109,7 +109,7 @@ h4 {
     outline: 0;
     cursor: pointer;
     background-color: #ffffff;
-    color: var(--grey-text);
+    color: #FFFFFF;
     border: 1px solid #cccccc;
 }
 .btn:hover {

@@ -1,7 +1,13 @@
+//let webAppConfig = dataiku.getWebAppConfig();
+let modelId = "LZ1rGMmQ"; //webAppConfig['modelId'];
+let versionId = "1602494694116";//webAppConfig['versionId'];
+var chart_list = [];
+
+
 var mainApp = angular.module("mainApp", []);
 mainApp.controller('vizController', function($scope, $http, $timeout) {
 
-        $http.get(getWebAppBackendUrl("get-column-list"))
+        $http.get(getWebAppBackendUrl("get-column-list/"+modelId+"/"+versionId))
             .then(function(response){
                 $scope.columnList = response.data;
                 $scope.sensitiveColumn = response.data[0];
@@ -11,7 +17,7 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
             });
 
 
-        $http.get(getWebAppBackendUrl("get-outcome-list"))
+        $http.get(getWebAppBackendUrl("get-outcome-list/"+modelId+"/"+versionId))
             .then(function(response){
                 $scope.outcomeList = response.data;
                 $scope.advantageousOutcome = $scope.outcomeList[0];
@@ -20,10 +26,9 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
             });
 
         $scope.updateValueList = function(){
-            $http.get(getWebAppBackendUrl("get-value-list/"+$scope.sensitiveColumn))
+            $http.get(getWebAppBackendUrl("get-value-list/"+modelId+"/"+versionId+"/"+$scope.sensitiveColumn))
                 .then(function(response){
                   $scope.valueList = response.data
-                  $scope.referenceGroup = $scope.valueList[0];
             }, function(e) {
                 dataiku.webappMessages.displayFatalError(e);
             });
@@ -41,6 +46,7 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
         }
 
        $scope.updateChart = function(chosenMetric) {
+          console.log('UPDATE CHART', chart_list)
            for (var i = 0; i < $scope.population_list.length; i++) {
                var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
@@ -49,8 +55,12 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
        }
 
         $scope.runAnalysis = function () {
-            markRunning(true);
-            $http.get(getWebAppBackendUrl("get-data"))
+             markRunning(true);
+             // remove old charts
+            for (var j = 0; j < chart_list.length; j++) {
+                    chart_list[j].destroy();
+            };
+            $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
                 .then(function(response){
                     $scope.populations = response.data.populations;
                     $scope.histograms = response.data.histograms;
@@ -176,7 +186,6 @@ function draw(element, chosenMetric, data){
                     display: true,
                     labelString: 'Population ratio'
                   }
-
                 }],
             }, // scales
             legend: {
@@ -193,4 +202,5 @@ function draw(element, chosenMetric, data){
         } // options
        }
     );
+    chart_list.push(bar_chart);
 }

@@ -1,5 +1,21 @@
 @import '/static/public/styles/1.0.0/variables.css';
 
+
+.card-deck {
+  margin-right: 8px;
+  margin-left: 8px;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+.container-fluid {
+  width: auto !important;
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+
+
 body{
     font-family: var(--font-family);
     background-color : var(--grey-lighten-7);
@@ -11,6 +27,12 @@ html {
 
 h3 {
     margin-bottom: 13px !important;
+}
+
+.box {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid #DDDDDD;
+    box-sizing: border-box;
 }
 
 
@@ -51,6 +73,15 @@ h3 {
     color: #666666;
 }
 
+.text-r {
+    font-family: var(--font-family);
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 16px;
+    color: #222222;
+}
+
 .text-sb {
     font-family: var(--font-family);
     font-style: normal;
@@ -58,6 +89,30 @@ h3 {
     font-size: 13px;
     line-height: 16px;
     color: #222222
+}
+
+.text-button {
+    font-family: var(--font-family);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    text-transform: uppercase;
+
+    /* @white-base */
+
+    color: #FFFFFF;
+
+    /* Inside Auto Layout */
+
+    flex: none;
+    order: 0;
+    align-self: flex-start;
+    flex-grow: 0;
+    margin: 10px 0px;
 }
 
 .grand-title-sb{

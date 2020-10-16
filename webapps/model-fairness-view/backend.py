@@ -2,6 +2,7 @@ import dataiku
 import pandas as pd
 import numpy as np
 import logging
+from flask import request
 import json
 import traceback
 
@@ -63,39 +64,45 @@ def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
     return result_type
 
 
-@app.route("/get-value-list/<column>")
-def get_value_list(column):
-    lst = []
-    if column == 'a':
-        lst = [1, 2, 3]
-    elif column == 'b':
-        lst = [4, 5, 6]
-    else:
-        lst = [7, 8, 9]
+@app.route("/get-value-list/<model_id>/<version_id>/<column>")
+def get_value_list(model_id, version_id, column):
+    model = dataiku.Model(model_id)
+    model_handler = get_model_handler(model, version_id=version_id)
+    model_accessor = ModelAccessor(model_handler)
+    test_df = model_accessor.get_original_test_df()
+    value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
 
-    return json.dumps(lst, allow_nan=False, default=convert_numpy_int64_to_int)
+    return json.dumps(value_list, allow_nan=False, default=convert_numpy_int64_to_int)
 
 
-@app.route('/get-column-list')
-def get_column_list():
-    lst = ['a', 'b', 'c']
+@app.route('/get-column-list/<model_id>/<version_id>')
+def get_column_list(model_id, version_id):
+    model = dataiku.Model(model_id)
+    model_handler = get_model_handler(model, version_id=version_id)
+    model_accessor = ModelAccessor(model_handler)
 
-    return json.dumps(lst, allow_nan=False, default=convert_numpy_int64_to_int)
-
-
-@app.route('/get-outcome-list')
-def get_outcome_list():
-    lst = ['5000+', '5000-']
-
-    return json.dumps(lst, allow_nan=False, default=convert_numpy_int64_to_int)
+    column_list = model_accessor.get_selected_features()
+    return json.dumps(column_list, allow_nan=False, default=convert_numpy_int64_to_int)
 
 
-@app.route('/get-data')
-def get_data():
+@app.route('/get-outcome-list/<model_id>/<version_id>')
+def get_outcome_list(model_id, version_id):
+    model = dataiku.Model(model_id)
+    model_handler = get_model_handler(model, version_id=version_id)
+    model_accessor = ModelAccessor(model_handler)
+    test_df = model_accessor.get_original_test_df()
+    target = model_accessor.get_target_variable()
+    outcome_list = test_df[target].unique().tolist()
+
+    return json.dumps(outcome_list, allow_nan=False, default=convert_numpy_int64_to_int)
+
+
+@app.route('/get-data/<model_id>/<version_id>/<advantageous_outcome>/<sensitive_outcome>/<reference_group>')
+def get_data(model_id, version_id, advantageous_outcome, sensitive_outcome, reference_group):
     try:
-        print('Getting data')
-        populations, disparity_dct = get_metrics()
-        histograms = get_histograms()
+        populations, disparity_dct = get_metrics(model_id, version_id, advantageous_outcome, sensitive_outcome,
+                                                 reference_group)
+        histograms = get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome)
         data = {'populations': populations,
                 'histograms': histograms,
                 'disparity': disparity_dct
@@ -108,23 +115,22 @@ def get_data():
         return traceback.format_exc(), 500
 
 
-def get_histograms():
+def get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome):
     try:
-        print('histograms')
-        model = dataiku.Model('LZ1rGMmQ')
-        model_handler = get_model_handler(model)
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
         model_accessor = ModelAccessor(model_handler)
 
-        advantageous_outcome = '50000+.'
         test_df = model_accessor.get_original_test_df()
         target_variable = model_accessor.get_target_variable()
 
         y_true = test_df.loc[:, target_variable]
         pred_df = model_accessor.predict(test_df)
         y_pred = pred_df.loc[:, 'prediction']
+
         advantageous_outcome_proba_col = 'proba_{}'.format(advantageous_outcome)
         y_pred_proba = pred_df.loc[:, advantageous_outcome_proba_col]
-        sensitive_feature_values = test_df['sex']
+        sensitive_feature_values = test_df[sensitive_outcome]
 
         return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
     except:
@@ -132,22 +138,19 @@ def get_histograms():
         return traceback.format_exc(), 500
 
 
-def get_metrics():
+def get_metrics(model_id, version_id, advantageous_outcome, sensitive_outcome, reference_group):
     try:
-        print('metrics')
-
-        model = dataiku.Model('LZ1rGMmQ')
-        model_handler = get_model_handler(model)
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
         model_accessor = ModelAccessor(model_handler)
 
-        advantageous_outcome = '50000+.'
         test_df = model_accessor.get_original_test_df()
         target_variable = model_accessor.get_target_variable()
 
         y_true = test_df.loc[:, target_variable]
         pred_df = model_accessor.predict(test_df)
         y_pred = pred_df.loc[:, 'prediction']
-        sensitive_feature_values = test_df['sex']
+        sensitive_feature_values = test_df[sensitive_outcome]
 
         model_report = ModelFairnessMetricReport(y_true, y_pred, sensitive_feature_values, advantageous_outcome)
 
@@ -159,7 +162,8 @@ def get_metrics():
             metric_summary = model_report.compute_metric_per_group(metric_function=metric_func)
             metric_dct[metric_func.__name__] = metric_summary.get('by_group')
 
-            metric_diff = model_report.compute_group_difference_from_summary(metric_summary, reference_group='Male')
+            metric_diff = model_report.compute_group_difference_from_summary(metric_summary,
+                                                                             reference_group=reference_group)
             v = np.array(list(metric_diff.get('by_group').values())).reshape(1, -1).squeeze()
             max_disparity = max(v, key=abs)
             disparity_dct[metric_func.__name__] = max_disparity
