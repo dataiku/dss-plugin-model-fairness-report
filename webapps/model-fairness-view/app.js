@@ -3,9 +3,18 @@ let modelId = "LZ1rGMmQ"; //webAppConfig['modelId'];
 let versionId = "1602494694116";//webAppConfig['versionId'];
 var chart_list = [];
 
+(function() {
+    'use strict';
 
-var mainApp = angular.module("mainApp", []);
-mainApp.controller('vizController', function($scope, $http, $timeout) {
+app.controller('vizController', function($scope, $http, $timeout, ModalService) {
+
+        $scope.modal = {};
+        $scope.removeModal = function(event) {
+            if (ModalService.remove($scope.modal)(event)) {
+                angular.element(".template").focus();
+            }
+        };
+        $scope.createModal = ModalService.create($scope.modal);
 
         $http.get(getWebAppBackendUrl("get-column-list/"+modelId+"/"+versionId))
             .then(function(response){
@@ -13,7 +22,7 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
                 $scope.sensitiveColumn = response.data[0];
                 $scope.updateValueList();
             }, function(e) {
-                dataiku.webappMessages.displayFatalError(e);
+                $scope.createModal.error(e.data);
             });
 
 
@@ -22,7 +31,7 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
                 $scope.outcomeList = response.data;
                 $scope.advantageousOutcome = $scope.outcomeList[0];
             }, function(e) {
-                dataiku.webappMessages.displayFatalError(e);
+                $scope.createModal.error(e.data);
             });
 
         $scope.updateValueList = function(){
@@ -30,7 +39,7 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
                 .then(function(response){
                   $scope.valueList = response.data
             }, function(e) {
-                dataiku.webappMessages.displayFatalError(e);
+                $scope.createModal.error(e.data);
             });
         }
 
@@ -46,7 +55,6 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
         }
 
        $scope.updateChart = function(chosenMetric) {
-          console.log('UPDATE CHART', chart_list)
            for (var i = 0; i < $scope.population_list.length; i++) {
                var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
@@ -56,12 +64,16 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
 
         $scope.runAnalysis = function () {
              markRunning(true);
+             $('#error_message').html('');
              // remove old charts
             for (var j = 0; j < chart_list.length; j++) {
                     chart_list[j].destroy();
             };
             $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
                 .then(function(response){
+                    console.log('))))');
+                    console.log(response.data.histograms);
+
                     $scope.populations = response.data.populations;
                     $scope.histograms = response.data.histograms;
                     $scope.disparity = response.data.disparity;
@@ -70,11 +82,12 @@ mainApp.controller('vizController', function($scope, $http, $timeout) {
                     $('.result-state').show();
                     markRunning(false);
             }, function(e) {
-                dataiku.webappMessages.displayFatalError(e);
+                markRunning(false);
+                $scope.createModal.error(e.data);
             });
         }
 });
-
+})();
 
 var metricOpacityMapping = {
     'default': [1,1,1,1],
@@ -170,7 +183,9 @@ function draw(element, chosenMetric, data){
                 gridLines: { display: false },
                   scaleLabel: {
                     display: true,
-                    labelString: 'Probability'
+                    labelString: 'Probability',
+                    fontFamily: "Source Sans Pro",
+                    fontSize: 13
                   }
                 }],
               yAxes: [{ 
@@ -184,7 +199,9 @@ function draw(element, chosenMetric, data){
               gridLines: { display: false },
                scaleLabel: {
                     display: true,
-                    labelString: 'Population ratio'
+                    labelString: 'Population ratio',
+                    fontFamily: "Source Sans Pro",
+                    fontSize: 13
                   }
                 }],
             }, // scales
@@ -193,7 +210,7 @@ function draw(element, chosenMetric, data){
                 position: "bottom",
                 labels:{
                     usePointStyle: true, 
-                    fontSize: 11,
+                    fontSize: 9,
                     fontColor: "#666666",
                     fontFamily: "Source Sans Pro"                    
                 },

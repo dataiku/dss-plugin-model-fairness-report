@@ -4,15 +4,17 @@
 <script src="https://cdn.rawgit.com/chartjs/Chart.js/master/samples/utils.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
-<link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
+
+<script type="text/javascript">
+    var app = angular.module("fairnessReport", []);
+</script>
 <link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
 <script src="/plugins/model-fairness-report/resource/dku-helpers.js"></script>
+<script src="/plugins/model-fairness-report/resource/js/helpers.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
+<link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
 
-
-
-<body ng-app = "mainApp" ng-controller = "vizController">
-
+<body  ng-app = "fairnessReport" ng-controller = "vizController">
 <div class="view-content text-r">
 <div style="margin: 16px 0; padding-top:12px; padding-left: 8px">Compute fairness metrics on column
     <select class="box text-r" ng-model="sensitiveColumn" ng-options="col for col in columnList" ng-change="updateValueList()">        <option></option>
@@ -25,14 +27,19 @@ with reference group
     <select class="box text-r" ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
         <option></option>
     </select>
-    <a class="btn btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="float: right; color: #FFFFFF;">COMPUTE</a>
+    <a class="btn btn-primary notrunning-state btn-sm" id="run-button" type="button" ng-click="runAnalysis()" style="color: #FFFFFF;">COMPUTE</a>
     <span class="running-state" style="display: none;">Please wait ...</span>
 </div>
-    <br></br>
-
 </div>
 
+<div ng-if="modal.type"
+         class="modal-background"
+         tabindex=0
+         ng-keyup="$event.keyCode == 27 && removeModal()"
+         ng-click="removeModal($event)">
+</div>
 
+<div id="error_message" style="width: 1000px; box-sizing: border-box; padding: 0;"></div>
 <div class="result-state" style="display: none;">
 <div class="container-fluid">
     <div class="row">
@@ -51,9 +58,9 @@ with reference group
   </div>
   <div class="card info-box" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
     <div class="card-body">
-      <h6 class="card-title small-title-sb">Equalized Odds<br></br></h6>
+      <h6 class="card-title small-title-sb">Equalized Odds</h6>
       <p class="card-text text">
-            A classifier satisfies this definition if protected and unprotected groups have equal <b><i>True Positive Rate</i></b> and equal <b>False Positive Rate</b>.
+            A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b> and equal <b>False Positive Rate</b>.
       </p>
     </div>
     <div class="card-footer bg-transparent">
@@ -65,7 +72,7 @@ with reference group
     <div class="card-body">
       <h6 class="card-title small-title-sb">Equality of Opportunity</h6>
       <p class="card-text text">
-          A classifier satisfies this definition if protected and unprotected groups have equal <b><i>True Positive Rate</i></b>.
+          A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b>.
         </p>
     </div>
     <div class="card-footer bg-transparent" >
@@ -77,7 +84,7 @@ with reference group
     <div class="card-body">
       <h6 class="card-title small-title-sb">Predictive Rate Parity</h6>
       <p class="card-text text">
-        A classifier satisfies this definition if protected and unprotected groups have equal <b><i>Positive Predictive Value</i></b>.
+        A classifier satisfies this definition if protected and unprotected groups have equal <b>Positive Predictive Value</b>.
       </p>
     </div>
     <div class="card-footer bg-transparent">
@@ -127,7 +134,7 @@ with reference group
 
                 <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'equalizedOdds'}">
                     <div class="card-body">
-                      <h6 class="card-title text-sb">False Positive Rate</h6>
+                      <h6 class="card-title text-sb">False Positive Rate<br></h6>
                       <p class="card-text text">
                             Fraction of negative cases correctly predicted to be in the negative class out of all actual negative cases
                       </p>
@@ -139,7 +146,7 @@ with reference group
 
                 <div class="card border-0" ng-class="{grayoutText: !['equalityOfOpportunity', 'equalizedOdds'].includes(activeMetric) }">
                     <div class="card-body">
-                      <h6 class="card-title text-sb">True Positive Rate</h6>
+                      <h6 class="card-title text-sb">True Positive Rate<br></h6>
                       <p class="card-text text">
                             Fraction of positive cases correctly predicted to be in the positive class out of all actual positive cases
                       </p>

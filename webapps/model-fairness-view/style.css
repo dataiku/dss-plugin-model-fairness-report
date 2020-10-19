@@ -33,6 +33,7 @@ h3 {
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid #DDDDDD;
     box-sizing: border-box;
+    height: 26px;
 }
 
 
@@ -247,4 +248,94 @@ canvas {
 }
 .alignright {
 	float: right;
+}
+
+
+/*MODALS*/
+.dku-modal-footer {
+    height: 30px;
+    padding-top: 20px;
+}
+
+.dku-button-modal-div {
+    float: right;
+}
+
+.dku-button-modal {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.dku-button-modal:disabled {
+    color: var(--grey-lighten-5);
+}
+
+.dku-button-modal:enabled:hover {
+    color: black;
+    background-color: var(--grey-lighten-6);
+}
+
+.dku-button-modal:enabled:active {
+    color: black;
+    background-color: var(--grey-lighten-5);
+}
+
+.dku-modal {
+    max-height: 360px;
+    width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: var(--white);
+}
+
+.dku-modal-title {
+    justify-content: space-between;
+}
+
+.dku-modal-body {
+    overflow: auto;
+    max-height: 250px;
+    white-space: pre-line;
+    text-align: justify;
+    font-size: 14px;
+}
+
+.dku-modal-body-error {
+    color: var(--error-red);
+}
+
+[name=promptForm] {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 2px;
+    padding-right: 2px;
+    min-width: 60%;
+    max-width: 80%;
+}
+
+.modal-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.dku-title {
+    display: flex;
+    align-items : center;
+    color: var(--grey-lighten-2);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--grey-lighten-6);
+    padding-bottom: 1%;
+    padding-top: 2%;
+    margin-bottom: 2%;
+    font-size:16px;
+    height: 5%;
 }

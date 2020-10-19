@@ -31,6 +31,10 @@ class ModelFairnessMetric(object):
         label_list = [x for x in np.unique(y_true) if x != advantageous_outcome]
         label_list.append(advantageous_outcome)
         conf_matrix = confusion_matrix(y_true, y_pred, labels=label_list, sample_weight=sample_weight)
+        print('))))))')
+        print(conf_matrix)
+        print('------')
+        print(conf_matrix.shape)
 
         true_negative = conf_matrix[0][0]
         false_negative = conf_matrix[1][0]
