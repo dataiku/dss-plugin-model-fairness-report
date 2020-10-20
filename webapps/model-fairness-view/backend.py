@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import logging
 from flask import request
-import json
 import simplejson
 import traceback
 
@@ -72,6 +71,14 @@ def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
 
     return result_type
 
+def remove_nan_from_list(lst):
+    new_list = []
+    for x in lst:
+        if isinstance(x, float) and np.isnan(x):
+            continue
+        else:
+            new_list.append(x)
+    return new_list
 
 @app.route("/get-value-list/<model_id>/<version_id>/<column>")
 def get_value_list(model_id, version_id, column):
@@ -81,9 +88,8 @@ def get_value_list(model_id, version_id, column):
         model_accessor = ModelAccessor(model_handler)
         test_df = model_accessor.get_original_test_df()
         value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
-
-        return json.dumps(value_list, allow_nan=False, default=convert_numpy_int64_to_int)
-
+        filtered_value_list= remove_nan_from_list(value_list)
+        return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
         logger.error(traceback.format_exc())
         return traceback.format_exc(), 500
@@ -95,9 +101,8 @@ def get_column_list(model_id, version_id):
         model = dataiku.Model(model_id)
         model_handler = get_model_handler(model, version_id=version_id)
         model_accessor = ModelAccessor(model_handler)
-
         column_list = model_accessor.get_selected_features()
-        return json.dumps(column_list, allow_nan=False, default=convert_numpy_int64_to_int)
+        return simplejson.dumps(column_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
         logger.error(traceback.format_exc())
         return traceback.format_exc(), 500
@@ -111,8 +116,8 @@ def get_outcome_list(model_id, version_id):
         test_df = model_accessor.get_original_test_df()
         target = model_accessor.get_target_variable()
         outcome_list = test_df[target].unique().tolist()
-
-        return json.dumps(outcome_list, allow_nan=False, default=convert_numpy_int64_to_int)
+        filtered_outcome_list = remove_nan_from_list(outcome_list)
+        return simplejson.dumps(filtered_outcome_list, ignore_nan=True, default=convert_numpy_int64_to_int)
 
     except:
         logger.error(traceback.format_exc())
@@ -127,8 +132,6 @@ def get_data(model_id, version_id, advantageous_outcome, sensitive_outcome, refe
                 'histograms': histograms,
                 'disparity': disparity_dct
                 }
-        x = json.dumps(data, allow_nan=True, default=convert_numpy_int64_to_int)
-        print('----A-----------', populations)
         return simplejson.dumps(data, ignore_nan=True, default=convert_numpy_int64_to_int)
 
     except:
@@ -157,7 +160,7 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome
 
 
 
-def get_metrics(model_id, version_id, advantageous_outcome, sensitive_outcome, reference_group):
+def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
 
     model = dataiku.Model(model_id)
     model_handler = get_model_handler(model, version_id=version_id)
@@ -165,11 +168,12 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_outcome, r
 
     test_df = model_accessor.get_original_test_df()
     target_variable = model_accessor.get_target_variable()
+    test_df.dropna(subset=[sensitive_column, target_variable], how='any', inplace=True)
 
     y_true = test_df.loc[:, target_variable]
     pred_df = model_accessor.predict(test_df)
     y_pred = pred_df.loc[:, 'prediction']
-    sensitive_feature_values = test_df[sensitive_outcome]
+    sensitive_feature_values = test_df[sensitive_column]
 
     model_report = ModelFairnessMetricReport(y_true, y_pred, sensitive_feature_values, advantageous_outcome)
 
