@@ -71,9 +71,6 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
             };
             $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
                 .then(function(response){
-                    console.log('))))');
-                    console.log(response.data.histograms);
-
                     $scope.populations = response.data.populations;
                     $scope.histograms = response.data.histograms;
                     $scope.disparity = response.data.disparity;
@@ -101,6 +98,7 @@ var metricOpacityMapping = {
 function markRunning(running) {
     if (running) {
         $('.running-state').show();
+        $('.landing-page').hide()
         $('.notrunning-state').hide();
         $('.result-state').hide();
     } else {
@@ -120,7 +118,6 @@ function draw(element, chosenMetric, data){
     var dates = ["0",  "", "", "", "", "", "", "", "", "1"];
 
     var [opacity1, opacity2, opacity3, opacity4] = metricOpacityMapping[chosenMetric]
-    //var bar_ctx = document.getElementById(canvas_id);
 
     var bar_chart = new Chart(element, {
         type: 'bar',
@@ -184,7 +181,7 @@ function draw(element, chosenMetric, data){
                   scaleLabel: {
                     display: true,
                     labelString: 'Probability',
-                    fontFamily: "Source Sans Pro",
+                    fontFamily: "'Source Sans Pro', sans-serif",
                     fontSize: 13
                   }
                 }],
@@ -200,7 +197,7 @@ function draw(element, chosenMetric, data){
                scaleLabel: {
                     display: true,
                     labelString: 'Population ratio',
-                    fontFamily: "Source Sans Pro",
+                    fontFamily: "'Source Sans Pro', sans-serif",
                     fontSize: 13
                   }
                 }],
@@ -210,9 +207,9 @@ function draw(element, chosenMetric, data){
                 position: "bottom",
                 labels:{
                     usePointStyle: true, 
-                    fontSize: 9,
-                    fontColor: "#666666",
-                    fontFamily: "Source Sans Pro"                    
+                    fontSize: 12,
+                    fontColor: "#222222",
+                    fontFamily: "'Source Sans Pro', sans-serif"
                 },
 
             }

@@ -8,15 +8,16 @@
 <script type="text/javascript">
     var app = angular.module("fairnessReport", []);
 </script>
-<link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
-<script src="/plugins/model-fairness-report/resource/dku-helpers.js"></script>
 <script src="/plugins/model-fairness-report/resource/js/helpers.js" type="text/javascript"></script>
 <link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
 <link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
+<link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
 
-<body  ng-app = "fairnessReport" ng-controller = "vizController">
+
+<body  ng-app = "fairnessReport" ng-controller = "vizController" class="report-box">
+<div class="container-fluid">
 <div class="view-content text-r">
-<div style="margin: 16px 0; padding-top:12px; padding-left: 8px">Compute fairness metrics on column
+<div>Compute fairness metrics on
     <select class="box text-r" ng-model="sensitiveColumn" ng-options="col for col in columnList" ng-change="updateValueList()">        <option></option>
     </select>
 with reference group
@@ -24,11 +25,14 @@ with reference group
             <option></option>
         </select>
  and advantageous outcome
-    <select class="box text-r" ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
+    <select class="box2 text-r" ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
         <option></option>
     </select>
-    <a class="btn btn-primary notrunning-state btn-sm" id="run-button" type="button" ng-click="runAnalysis()" style="color: #FFFFFF;">COMPUTE</a>
-    <span class="running-state" style="display: none;">Please wait ...</span>
+    <div style="display: inline;">
+        <a class="dku-btn dku-btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="color: #FFFFFF;">COMPUTE</a>
+        <span class="running-state" style="display: none;">Running ...</span>
+    </div>
+</div>
 </div>
 </div>
 
@@ -39,55 +43,65 @@ with reference group
          ng-click="removeModal($event)">
 </div>
 
-<div id="error_message" style="width: 1000px; box-sizing: border-box; padding: 0;"></div>
-<div class="result-state" style="display: none;">
+<div class="landing-page center" style="padding-top:16px; padding-bottom:16px ">
+<div class="ultralarge-title-sb">
+    Model Fairness
+</div>
+<div class="grand-title-r">
+    Select column and advantageous outcome on which you want to compute fairness metrics
+</div>
+
+</div>
+
+
+<div class="result-state" style="display: none; padding-top:16px; padding-bottom:16px">
 <div class="container-fluid">
     <div class="row">
 <div class="card-deck">
-  <div class="card info-box" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
-    <div class="card-body">
-      <h6 class="card-title small-title-sb">Demographic Parity</h6>
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
+    <div class="card-body pb-2 pt-2">
+      <h6 class="card-title small-title-sb ">Demographic Parity</h6>
       <p class="card-text text">
            A classifier satisfies this definition if the predicted decision is independent of the protected attribute.
       </p>
     </div>
-    <div class="card-footer bg-transparent">
+    <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.demographic_parity}}</h4>
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
-    <div class="card-body">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
+    <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equalized Odds</h6>
       <p class="card-text text">
             A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b> and equal <b>False Positive Rate</b>.
       </p>
     </div>
-    <div class="card-footer bg-transparent">
+    <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.equalized_odds}}</h4>
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; updateChart('equalityOfOpportunity')">
-    <div class="card-body">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; updateChart('equalityOfOpportunity')">
+    <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equality of Opportunity</h6>
       <p class="card-text text">
           A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b>.
         </p>
     </div>
-    <div class="card-footer bg-transparent" >
+    <div class="card-footer bg-transparent pt-2" >
         <h4 class="huge-title-sb">{{disparity.equality_of_opportunity}}</h4>
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; updateChart('predictiveRateParity')">
-    <div class="card-body">
-      <h6 class="card-title small-title-sb">Predictive Rate Parity</h6>
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; updateChart('predictiveRateParity')">
+    <div class="card-body pb-2 pt-2">
+      <h6 class="card-title small-title-sb ">Predictive Rate Parity</h6>
       <p class="card-text text">
         A classifier satisfies this definition if protected and unprotected groups have equal <b>Positive Predictive Value</b>.
       </p>
     </div>
-    <div class="card-footer bg-transparent">
+    <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.predictive_rate_parity}}</h4>
         <div class="text">Max disparity compared to reference group</div>
     </div>
@@ -95,15 +109,11 @@ with reference group
 </div>
 </div>
 
-<br></br>
-
-    <div class="text">
+    <div class="text" style="padding-top:16px; padding-bottom:16px">
         To handle overlapping borders within components (e.g., buttons and inputs in input groups), we use low single digit z-index values of 1, 2, and 3 for default, hover, and active states. On hover/focus/active, we bring a particular element to the forefront with a higher z-index value to show their border over the sibling elements.
     </div>
 
-    <br></br>
-
-    <div class="grand-title-sb">
+    <div class="grand-title-sb" style="adding-bottom:16px">
         Equality of Opportunity
     </div>
 </div>
@@ -119,52 +129,52 @@ with reference group
             </div>
         </div>
         <div class="col">
-            <div class="card-group info-box-2 text-center">
-                <div class="card border-0 p-0" ng-class="{grayoutText: !['demographicParity'].includes(activeMetric) }">
-                    <div class="card-body">
-                      <h6 class="card-title text-sb">Positive Rate <br></br></h6>
+            <div class="card-group">
+                <div class="card border-0" ng-class="{grayoutText: !['demographicParity'].includes(activeMetric) }">
+                    <div class="card-body pb-2 pt-3 pl-0 pr-3">
+                      <h6 class="card-title text-sb">Positive Rate</h6>
                       <p class="card-text text">
                             Fraction of positive cases predicted
                       </p>
                     </div>
-                    <div class="card-footer bg-transparent title-sb">
+                    <div class="card-footer bg-transparent title-sb pt-2">
                         {{population.positive_rate}}
                     </div>
                 </div>
 
                 <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'equalizedOdds'}">
-                    <div class="card-body">
-                      <h6 class="card-title text-sb">False Positive Rate<br></h6>
+                    <div class="card-body pb-2 pt-3 pl-2 pr-3">
+                      <h6 class="card-title text-sb">False Positive Rate</h6>
                       <p class="card-text text">
                             Fraction of negative cases correctly predicted to be in the negative class out of all actual negative cases
                       </p>
                     </div>
-                    <div class="card-footer bg-transparent title-sb">
+                    <div class="card-footer bg-transparent title-sb pt-2">
                         {{population.false_positive_rate}}
                     </div>
                 </div>
 
                 <div class="card border-0" ng-class="{grayoutText: !['equalityOfOpportunity', 'equalizedOdds'].includes(activeMetric) }">
-                    <div class="card-body">
-                      <h6 class="card-title text-sb">True Positive Rate<br></h6>
+                    <div class="card-body pb-2 pt-3 pl-2 pr-3">
+                      <h6 class="card-title text-sb">True Positive Rate</h6>
                       <p class="card-text text">
                             Fraction of positive cases correctly predicted to be in the positive class out of all actual positive cases
                       </p>
                     </div>
-                    <div class="card-footer bg-transparent title-sb">
+                    <div class="card-footer bg-transparent title-sb pt-2">
                         {{population.true_positive_rate}}
                     </div>
                 </div>
 
 
                 <div class="card border-0" ng-class="{grayoutText : activeMetric !== 'predictiveRateParity'}">
-                    <div class="card-body">
+                    <div class="card-body pb-2 pt-3 pl-2 pr-0">
                       <h6 class="card-title text-sb">Positive Predictive Value</h6>
                       <p class="card-text text">
                             Fraction of positive cases correctly predicted to be in the positive class out of all predicted positive cases
                       </p>
                     </div>
-                    <div class="card-footer bg-transparent title-sb">
+                    <div class="card-footer bg-transparent title-sb pt-2">
                         {{population.positive_predictive_value}}
                     </div>
                 </div>
