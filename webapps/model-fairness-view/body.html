@@ -50,9 +50,7 @@ with reference group
 <div class="grand-title-r">
     Select column and advantageous outcome on which you want to compute fairness metrics
 </div>
-
 </div>
-
 
 <div class="result-state" style="display: none; padding-top:16px; padding-bottom:16px">
 <div class="container-fluid">
@@ -62,7 +60,7 @@ with reference group
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb ">Demographic Parity</h6>
       <p class="card-text text">
-           A classifier satisfies this definition if the predicted decision is independent of the protected attribute.
+           A classifier satisfies this definition if protected and unprotected groups have equal <span class="text-highlight">Positive Rate</span>.
       </p>
     </div>
     <div class="card-footer bg-transparent pt-2">
@@ -74,7 +72,7 @@ with reference group
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equalized Odds</h6>
       <p class="card-text text">
-            A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b> and equal <b>False Positive Rate</b>.
+            A classifier satisfies this definition if protected and unprotected groups have equal <span class="text-highlight">True Positive Rate</span> and equal <span class="text-highlight">False Positive Rate</span>.
       </p>
     </div>
     <div class="card-footer bg-transparent pt-2">
@@ -86,7 +84,7 @@ with reference group
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equality of Opportunity</h6>
       <p class="card-text text">
-          A classifier satisfies this definition if protected and unprotected groups have equal <b>True Positive Rate</b>.
+          A classifier satisfies this definition if protected and unprotected groups have equal <span class="text-highlight">True Positive Rate</span>.
         </p>
     </div>
     <div class="card-footer bg-transparent pt-2" >
@@ -98,7 +96,7 @@ with reference group
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb ">Predictive Rate Parity</h6>
       <p class="card-text text">
-        A classifier satisfies this definition if protected and unprotected groups have equal <b>Positive Predictive Value</b>.
+        A classifier satisfies this definition if protected and unprotected groups have equal <span class="text-highlight">Positive Predictive Value</span>.
       </p>
     </div>
     <div class="card-footer bg-transparent pt-2">
@@ -109,20 +107,38 @@ with reference group
 </div>
 </div>
 
-    <div class="text" style="padding-top:16px; padding-bottom:16px">
-        To handle overlapping borders within components (e.g., buttons and inputs in input groups), we use low single digit z-index values of 1, 2, and 3 for default, hover, and active states. On hover/focus/active, we bring a particular element to the forefront with a higher z-index value to show their border over the sibling elements.
+    <div class="text" ng-switch on = "activeMetric">
+        <p ng-switch-when = "demographicParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
+            This metric is satisfied if the results of the model's classification are not dependent on the given sensitive attribute ({{sensitiveColumn}}). <br/>
+            In our case, it means that for each population of {{sensitiveColumn}}, we will have the same ratio of advantageous outcome {{label_list[0]}} predicted. <br/>
+            The disparity metric reported above is the biggest difference in Positive Rate between another population and the reference population ({{referenceGroup}}).
+        </p>
+        <p ng-switch-when = "equalizedOdds" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
+            This metric is satisfied if, for any particular label, the model predicts that label equally well for all values of column {{sensitiveColumn}}.<br/>
+            The disparity metric reported above is the biggest difference between another population and the reference population ({{referenceGroup}}).
+        </p>
+        <p ng-switch-when = "equalityOfOpportunity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
+            A fairness metric that checks whether, for a preferred label (one that confers an advantage or benefit to a person) and a given attribute, a classifier predicts that preferred label equally well for all values of that attribute. <br/>
+            In other words, equality of opportunity measures whether the people who should qualify for an opportunity are equally likely to do so regardless of their group membership.<br/>
+            The disparity metric reported above is the biggest difference in Positive Rate between another population and the reference population ({{referenceGroup}}).
+        </p>
+        <p ng-switch-when = "predictiveRateParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
+            A fairness metric that checks whether, for a given classifier, the precision rates are equivalent for subgroups under consideration. <br/>
+            The disparity metric reported above is the biggest difference in Positive Rate between another population and the reference population ({{referenceGroup}}).
+        </p>
     </div>
-
-    <div class="grand-title-sb" style="adding-bottom:16px">
-        Equality of Opportunity
+    <div class="grand-title-sb" ng-switch on = "activeMetric">
+        <p ng-switch-when = "demographicParity" style="padding-bottom:16px margin-bottom:0px">Demographic Parity</p>
+        <p ng-switch-when = "equalizedOdds" style="padding-bottom:16px margin-bottom:0px">Equalized Odds</p>
+        <p ng-switch-when = "equalityOfOpportunity" style="padding-bottom:16px margin-bottom:0px">Equality of Opportunity</p>
+        <p ng-switch-when = "predictiveRateParity" style="padding-bottom:16px margin-bottom:0px">Predictive Rate Parity</p>
     </div>
 </div>
 <hr/>
 
     <div class="container-fluid" ng-repeat= "population in populations track by $index">
-    <div class="small-title-sb">{{population.name}} - 11% - (28213, 28922)</div>
-    <br></br>
-    <div class="row">
+    <div class="small-title-sb">Population: {{population.name}} - {{population.size}} observations</div>
+    <div class="row" style="padding-top: 16px;">
         <div class="col-5">
             <div>
                 <canvas id="bar-chart-{{ $index }}"></canvas>
@@ -134,7 +150,7 @@ with reference group
                     <div class="card-body pb-2 pt-3 pl-0 pr-3">
                       <h6 class="card-title text-sb">Positive Rate</h6>
                       <p class="card-text text">
-                            Fraction of positive cases predicted
+                            Fraction of positive cases ({{label_list[1]}}) predicted
                       </p>
                     </div>
                     <div class="card-footer bg-transparent title-sb pt-2">
@@ -146,7 +162,7 @@ with reference group
                     <div class="card-body pb-2 pt-3 pl-2 pr-3">
                       <h6 class="card-title text-sb">False Positive Rate</h6>
                       <p class="card-text text">
-                            Fraction of negative cases correctly predicted to be in the negative class out of all actual negative cases
+                            Fraction of negative cases ({{label_list[0]}}) correctly predicted to be in the negative class out of all actual negative cases
                       </p>
                     </div>
                     <div class="card-footer bg-transparent title-sb pt-2">
@@ -158,7 +174,7 @@ with reference group
                     <div class="card-body pb-2 pt-3 pl-2 pr-3">
                       <h6 class="card-title text-sb">True Positive Rate</h6>
                       <p class="card-text text">
-                            Fraction of positive cases correctly predicted to be in the positive class out of all actual positive cases
+                            Fraction of positive cases ({{label_list[1]}}) correctly predicted to be in the positive class out of all actual positive cases
                       </p>
                     </div>
                     <div class="card-footer bg-transparent title-sb pt-2">
@@ -171,7 +187,7 @@ with reference group
                     <div class="card-body pb-2 pt-3 pl-2 pr-0">
                       <h6 class="card-title text-sb">Positive Predictive Value</h6>
                       <p class="card-text text">
-                            Fraction of positive cases correctly predicted to be in the positive class out of all predicted positive cases
+                            Fraction of positive cases ({{label_list[1]}}) correctly predicted to be in the positive class out of all predicted positive cases
                       </p>
                     </div>
                     <div class="card-footer bg-transparent title-sb pt-2">

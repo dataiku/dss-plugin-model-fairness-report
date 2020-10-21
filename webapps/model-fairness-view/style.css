@@ -177,6 +177,13 @@ h3 {
     color: #666666;
 }
 
+
+.text-highlight {
+    font-weight: 500;
+    font-size: 13px;
+    color: #222222;
+    }
+
 .text-r {
     font-family: var(--font-family);
     font-style: normal;
@@ -224,7 +231,7 @@ h3 {
     font-style: normal;
     font-weight: 500;
     font-size: 22px;
-    line-height: 28px;
+    line-height: 22px;
     color: #000000;
 }
 

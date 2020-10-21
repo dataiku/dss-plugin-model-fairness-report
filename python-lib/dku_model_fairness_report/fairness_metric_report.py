@@ -77,7 +77,7 @@ class ModelFairnessMetricReport(object):
         self.sample_weight = sample_weight  # 1D array
         self._check()
 
-        self.label_list = self._get_label_list()
+        self.label_list = self.get_label_list()
 
     def _check(self):
         possible_outcomes = set(self.y_true.unique()).union(set(self.y_pred.unique()))
@@ -91,7 +91,7 @@ class ModelFairnessMetricReport(object):
         if reference_group not in summary.get(DkuFairnessConstants.BY_GROUP).keys():
             raise ValueError('The chosen reference group "{0}" does not exist in the input metric summary.'.format(reference_group))
 
-    def _get_label_list(self):
+    def get_label_list(self):
         label_list = [x for x in np.unique(self.y_true) if x != self.advantageous_outcome]
         label_list.append(self.advantageous_outcome)
 

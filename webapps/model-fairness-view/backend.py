@@ -136,14 +136,14 @@ def get_outcome_list(model_id, version_id):
 @app.route('/get-data/<model_id>/<version_id>/<advantageous_outcome>/<sensitive_column>/<reference_group>')
 def get_data(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
     try:
-        populations, disparity_dct = get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group)
+        populations, disparity_dct, label_list = get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group)
         histograms = get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
         data = {'populations': populations,
                 'histograms': histograms,
-                'disparity': disparity_dct
+                'disparity': disparity_dct,
+                'labels': label_list
                 }
         return simplejson.dumps(data, ignore_nan=True, default=convert_numpy_int64_to_int)
-
     except:
         logger.error(traceback.format_exc())
         return traceback.format_exc(), 500
@@ -211,7 +211,10 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
 
     populations = []
     for name in population_names:
-        dct = {'name': name}
+        dct = {
+            'name': name,
+            'size': len(test_df[test_df[sensitive_column] == name])
+        }
         for m, v in metric_dct.items():
             if m == 'demographic_parity':
                 dct['positive_rate'] = v[name]
@@ -226,5 +229,7 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
                 dct[k] = '.'
         populations.append(dct)
 
-    return populations, disparity_dct
+    label_list = model_report.get_label_list()
+
+    return sorted(populations, key=lambda population: population['size'], reverse=True), disparity_dct, label_list
 

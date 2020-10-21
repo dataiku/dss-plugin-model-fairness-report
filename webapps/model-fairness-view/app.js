@@ -49,7 +49,7 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
             for (var i = 0; i < $scope.population_list.length; i++) {
                 var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.histograms[population]);
+               draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
             }
         });
         }
@@ -58,7 +58,7 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
            for (var i = 0; i < $scope.population_list.length; i++) {
                var element = $("#bar-chart-"+i);
                 var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.histograms[population]);
+               draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
            }
        }
 
@@ -74,6 +74,7 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
                     $scope.populations = response.data.populations;
                     $scope.histograms = response.data.histograms;
                     $scope.disparity = response.data.disparity;
+                    $scope.label_list = response.data.labels
                     $scope.population_list = Object.keys($scope.histograms);
                     $scope.initChart('default');
                     $('.result-state').show();
@@ -107,17 +108,19 @@ function markRunning(running) {
     }
 }
 
-function draw(element, chosenMetric, data){
+function draw(element, chosenMetric, data, label_list){
     // Return with commas in between
       var numberWithCommas = function(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       };
-    //var dates = ["0", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "1"];
     var concatted_array = data['predicted_0_true_1'].concat(data['predicted_0_true_0'], data['predicted_1_true_1'], data['predicted_1_true_0'])
     var max_y = Math.ceil( Math.max.apply(null, concatted_array) / 10) * 10;
     var dates = ["0",  "", "", "", "", "", "", "", "", "1"];
 
     var [opacity1, opacity2, opacity3, opacity4] = metricOpacityMapping[chosenMetric]
+
+    var class0 = label_list[0];
+    var class1 =label_list[1];
 
     var bar_chart = new Chart(element, {
         type: 'bar',
@@ -125,25 +128,25 @@ function draw(element, chosenMetric, data){
             labels: dates,
             datasets: [
             {
-                label: 'predicted = 0, true = 1',
+                label: 'predicted = '+ class0 + ', true = '+ class1,
                 data: data['predicted_0_true_1'],
-                backgroundColor: "rgb(95, 137, 181,"+ opacity1 + ")", //"#5F89B5",
+                backgroundColor: "rgb(95, 137, 181,"+ opacity1 + ")",
                 hoverBackgroundColor: "rgb(95, 137, 181, 0.15)",
                 hoverBorderWidth: 0,
                 pointStyle:"circle",
                 borderWidth: 0
             },
             {
-                label: 'predicted = 0, true = 0',
+                label: 'predicted = '+class0+', true = '+class0,
                 data: data['predicted_0_true_0'],
-                backgroundColor: "rgb(121, 158, 195,"+ opacity2 +")",//"#799EC3",
+                backgroundColor: "rgb(121, 158, 195,"+ opacity2 +")",
                 hoverBackgroundColor: "rgb(121, 158, 195, 0.14)",
                 hoverBorderWidth: 0,
                 pointStyle:"circle",
                 borderWidth: 0
             },
             {
-                label: 'predicted = 1, true = 1',
+                label: 'predicted = '+class1+', true = '+class1,
                 data: data['predicted_1_true_1'],
                 backgroundColor: "rgb(239, 148, 93," + opacity3 + ")",
                 hoverBackgroundColor: "rgb(239, 148, 93)",
@@ -152,7 +155,7 @@ function draw(element, chosenMetric, data){
                 borderWidth: 0
             },
               {
-                label: 'predicted = 1, true = 0',
+                label: 'predicted = '+class1+', true = '+class0,
                 data: data['predicted_1_true_0'],
                 backgroundColor: "rgb(247, 194, 154, " + opacity4 + ")",
                 hoverBackgroundColor: "rgb(247, 194, 154)",
@@ -180,9 +183,9 @@ function draw(element, chosenMetric, data){
                 gridLines: { display: false },
                   scaleLabel: {
                     display: true,
-                    labelString: 'Probability',
+                    labelString: 'Prediction probability',
                     fontFamily: "'Source Sans Pro', sans-serif",
-                    fontSize: 13
+                    fontSize: 12
                   }
                 }],
               yAxes: [{ 
@@ -198,7 +201,7 @@ function draw(element, chosenMetric, data){
                     display: true,
                     labelString: 'Population ratio',
                     fontFamily: "'Source Sans Pro', sans-serif",
-                    fontSize: 13
+                    fontSize: 12
                   }
                 }],
             }, // scales
@@ -207,7 +210,7 @@ function draw(element, chosenMetric, data){
                 position: "bottom",
                 labels:{
                     usePointStyle: true, 
-                    fontSize: 12,
+                    fontSize: 11,
                     fontColor: "#222222",
                     fontFamily: "'Source Sans Pro', sans-serif"
                 },
