@@ -43,7 +43,6 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
 
     return histogram_dict
 
-
 def convert_numpy_int64_to_int(o):
     if isinstance(o, np.int64):
         return int(o)
@@ -71,6 +70,18 @@ def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
 
     return result_type
 
+@app.route('/init-webapp/<model_id>/<version_id>')
+def init_webapp(model_id, version_id):
+    try:
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
+        model_accessor = ModelAccessor(model_handler)
+        column_list = model_accessor.get_selected_features()
+    except:
+        logger.error(traceback.format_exc())
+        return traceback.format_exc(), 500
+
+
 def remove_nan_from_list(lst):
     new_list = []
     for x in lst:
@@ -88,7 +99,7 @@ def get_value_list(model_id, version_id, column):
         model_accessor = ModelAccessor(model_handler)
         test_df = model_accessor.get_original_test_df()
         value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
-        filtered_value_list= remove_nan_from_list(value_list)
+        filtered_value_list = remove_nan_from_list(value_list)
         return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
         logger.error(traceback.format_exc())
@@ -118,16 +129,15 @@ def get_outcome_list(model_id, version_id):
         outcome_list = test_df[target].unique().tolist()
         filtered_outcome_list = remove_nan_from_list(outcome_list)
         return simplejson.dumps(filtered_outcome_list, ignore_nan=True, default=convert_numpy_int64_to_int)
-
     except:
         logger.error(traceback.format_exc())
         return traceback.format_exc(), 500
 
-@app.route('/get-data/<model_id>/<version_id>/<advantageous_outcome>/<sensitive_outcome>/<reference_group>')
-def get_data(model_id, version_id, advantageous_outcome, sensitive_outcome, reference_group):
+@app.route('/get-data/<model_id>/<version_id>/<advantageous_outcome>/<sensitive_column>/<reference_group>')
+def get_data(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
     try:
-        populations, disparity_dct = get_metrics(model_id, version_id, advantageous_outcome, sensitive_outcome,reference_group)
-        histograms = get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome)
+        populations, disparity_dct = get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group)
+        histograms = get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
         data = {'populations': populations,
                 'histograms': histograms,
                 'disparity': disparity_dct
@@ -139,7 +149,7 @@ def get_data(model_id, version_id, advantageous_outcome, sensitive_outcome, refe
         return traceback.format_exc(), 500
 
 
-def get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome):
+def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column):
 
     model = dataiku.Model(model_id)
     model_handler = get_model_handler(model, version_id=version_id)
@@ -154,7 +164,7 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_outcome
 
     advantageous_outcome_proba_col = 'proba_{}'.format(advantageous_outcome)
     y_pred_proba = pred_df.loc[:, advantageous_outcome_proba_col]
-    sensitive_feature_values = test_df[sensitive_outcome]
+    sensitive_feature_values = test_df[sensitive_column]
 
     return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
 
@@ -173,10 +183,20 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
     y_true = test_df.loc[:, target_variable]
     pred_df = model_accessor.predict(test_df)
     y_pred = pred_df.loc[:, 'prediction']
+
+
+    try: # check whether or not the column can be casted to int
+        if np.array_equal(test_df[sensitive_column], test_df[sensitive_column].astype(int)):
+            test_df[sensitive_column] = test_df[sensitive_column].astype(int)
+        if test_df[sensitive_column].dtypes == int:
+            reference_group = int(reference_group)
+        if test_df[sensitive_column].dtypes == float:
+            reference_group = float(reference_group)
+    except:
+        pass
+
     sensitive_feature_values = test_df[sensitive_column]
-
     model_report = ModelFairnessMetricReport(y_true, y_pred, sensitive_feature_values, advantageous_outcome)
-
     population_names = sensitive_feature_values.unique()
 
     metric_dct = {}

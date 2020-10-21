@@ -1,6 +1,6 @@
-//let webAppConfig = dataiku.getWebAppConfig();
-let modelId = "LZ1rGMmQ"; //webAppConfig['modelId'];
-let versionId = "1602494694116";//webAppConfig['versionId'];
+let webAppConfig = dataiku.getWebAppConfig();
+let modelId = webAppConfig['modelId'];
+let versionId = webAppConfig['versionId'];
 var chart_list = [];
 
 (function() {
