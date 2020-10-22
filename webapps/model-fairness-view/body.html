@@ -56,7 +56,7 @@ with reference group
 <div class="container-fluid">
     <div class="row">
 <div class="card-deck">
-  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; updateChart('demographicParity')">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'demographicParity'}" ng-click="activeMetric = 'demographicParity'; generateChart('demographicParity')">
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb ">Demographic Parity</h6>
       <p class="card-text text">
@@ -68,7 +68,7 @@ with reference group
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; updateChart('equalizedOdds')">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; generateChart('equalizedOdds')">
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equalized Odds</h6>
       <p class="card-text text">
@@ -80,7 +80,7 @@ with reference group
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; updateChart('equalityOfOpportunity')">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; generateChart('equalityOfOpportunity')">
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb">Equality of Opportunity</h6>
       <p class="card-text text">
@@ -92,7 +92,7 @@ with reference group
         <div class="text">Max disparity compared to reference group</div>
     </div>
   </div>
-  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; updateChart('predictiveRateParity')">
+  <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; generateChart('predictiveRateParity')">
     <div class="card-body pb-2 pt-2">
       <h6 class="card-title small-title-sb ">Predictive Rate Parity</h6>
       <p class="card-text text">

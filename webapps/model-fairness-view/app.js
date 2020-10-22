@@ -8,14 +8,7 @@ var chart_list = [];
 
 app.controller('vizController', function($scope, $http, $timeout, ModalService) {
 
-        $scope.modal = {};
-        $scope.removeModal = function(event) {
-            if (ModalService.remove($scope.modal)(event)) {
-                angular.element(".template").focus();
-            }
-        };
-        $scope.createModal = ModalService.create($scope.modal);
-
+        $scope.activeMetric = 'demographicParity';
         $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
             .then(function(response){
                 $scope.columnList = response.data;
@@ -34,6 +27,14 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
                 $scope.createModal.error(e.data);
             });
 
+        $scope.modal = {};
+        $scope.removeModal = function(event) {
+            if (ModalService.remove($scope.modal)(event)) {
+                angular.element(".template").focus();
+            }
+        };
+        $scope.createModal = ModalService.create($scope.modal);
+
         $scope.updateValueList = function(){
             $http.get(getWebAppBackendUrl("get-value-list/"+modelId+"/"+versionId+"/"+$scope.sensitiveColumn))
                 .then(function(response){
@@ -43,27 +44,19 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
             });
         }
 
-        $scope.activeMetric = 'demographicParity';
-        $scope.initChart = function(chosenMetric) {
-        $timeout(function () {
-            for (var i = 0; i < $scope.population_list.length; i++) {
-                var element = $("#bar-chart-"+i);
-                var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
-            }
-        });
+        $scope.generateChart = function(chosenMetric) {
+            $timeout(function () {
+                for (var i = 0; i < $scope.population_list.length; i++) {
+                    var element = $("#bar-chart-"+i);
+                    var population = $scope.population_list[i];
+                   draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
+                }
+            });
         }
-
-       $scope.updateChart = function(chosenMetric) {
-           for (var i = 0; i < $scope.population_list.length; i++) {
-               var element = $("#bar-chart-"+i);
-                var population = $scope.population_list[i];
-               draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
-           }
-       }
 
         $scope.runAnalysis = function () {
              markRunning(true);
+             $scope.activeMetric = 'demographicParity';
              $('#error_message').html('');
              // remove old charts
             for (var j = 0; j < chart_list.length; j++) {
@@ -76,7 +69,7 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
                     $scope.disparity = response.data.disparity;
                     $scope.label_list = response.data.labels
                     $scope.population_list = Object.keys($scope.histograms);
-                    $scope.initChart('default');
+                    $scope.generateChart('default');
                     $('.result-state').show();
                     markRunning(false);
             }, function(e) {
@@ -91,8 +84,8 @@ var metricOpacityMapping = {
     'default': [1,1,1,1],
     'demographicParity': [1,1,1,1],
     'equalizedOdds': [1,1,1,1],
-    'equalityOfOpportunity': [0.1, 0.1, 1, 1],
-    'predictiveRateParity': [1, 0.1, 1, 0.1]
+    'equalityOfOpportunity': [1, 0.1, 1, 0.1],
+    'predictiveRateParity':  [0.1, 0.1, 1, 1]
 }
 
 
