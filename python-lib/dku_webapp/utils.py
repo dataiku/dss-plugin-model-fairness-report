@@ -139,11 +139,12 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
         metric_dct[metric_func.__name__] = metric_summary.get(DkuFairnessConstants.BY_GROUP)
         metric_diff = model_report.compute_group_difference_from_summary(metric_summary, reference_group=reference_group)
         v = np.array(list(metric_diff.get(DkuFairnessConstants.BY_GROUP).values())).reshape(1, -1).squeeze()
-        max_disparity = max(v, key=abs)
-        if np.isnan(max_disparity):
-            disparity_dct[metric_func.__name__] = 'N/A' # for display purpose
-        else:
+        v_without_nan = [x for x in v if not np.isnan(x)]
+        if len(v_without_nan) > 0:
+            max_disparity = max(v_without_nan, key=abs)
             disparity_dct[metric_func.__name__] = max_disparity
+        else:
+            disparity_dct[metric_func.__name__] = 'N/A' # for display purpose
 
     populations = []
     for name in population_names:
