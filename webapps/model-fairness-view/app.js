@@ -16,7 +16,7 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
         };
         $scope.createModal = ModalService.create($scope.modal);
 
-        $http.get(getWebAppBackendUrl("get-column-list/"+modelId+"/"+versionId))
+        $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
             .then(function(response){
                 $scope.columnList = response.data;
                 $scope.sensitiveColumn = response.data[0];

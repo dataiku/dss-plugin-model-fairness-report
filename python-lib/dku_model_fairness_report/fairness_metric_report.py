@@ -121,6 +121,7 @@ class ModelFairnessMetricReport(object):
         reference_metrics = self._get_reference_group(reference_group, summary)
         for group, group_metrics in summary.get(DkuFairnessConstants.BY_GROUP).items():
             func_by_group[group] = np.round(func(group_metrics, reference_metrics), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+
         # TODO decide if it is a good idea to put overall metric here
         func_by_group[DkuFairnessConstants.OVERALL] = np.round(func(summary.get(DkuFairnessConstants.OVERALL), reference_metrics), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return Bunch(reference_group=reference_group, by_group=func_by_group)
