@@ -46,9 +46,9 @@ app.controller('vizController', function($scope, $http, $timeout, ModalService) 
 
         $scope.generateChart = function(chosenMetric) {
             $timeout(function () {
-                for (var i = 0; i < $scope.population_list.length; i++) {
+                for (var i = 0; i < $scope.populations.length; i++) {
+                    var population = $scope.populations[i]['name'];
                     var element = $("#bar-chart-"+i);
-                    var population = $scope.population_list[i];
                    draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
                 }
             });
@@ -108,7 +108,7 @@ function draw(element, chosenMetric, data, label_list){
       };
     var concatted_array = data['predicted_0_true_1'].concat(data['predicted_0_true_0'], data['predicted_1_true_1'], data['predicted_1_true_0'])
     var max_y = Math.ceil( Math.max.apply(null, concatted_array) / 10) * 10;
-    var dates = ["0",  "", "", "", "", "", "", "", "", "1"];
+    var label_x = ["0",  "", "", "", "", "", "", "", "", "1"];
 
     var [opacity1, opacity2, opacity3, opacity4] = metricOpacityMapping[chosenMetric]
 
@@ -118,7 +118,7 @@ function draw(element, chosenMetric, data, label_list){
     var bar_chart = new Chart(element, {
         type: 'bar',
         data: {
-            labels: dates,
+            labels: label_x,
             datasets: [
             {
                 label: 'predicted = '+ class0 + ', true = '+ class1,
