@@ -19,6 +19,13 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     df['prediction_result_type'] = get_prediction_result_type(y_true, y_pred, advantageous_outcome)
     df['sensitive_feature'] = sensitive_feature_values
 
+    cast_to_int = False
+    try: # check whether or not the column can be casted to int
+        if np.array_equal(df['sensitive_feature'], df['sensitive_feature'].astype(int)):
+            cast_to_int = True
+    except:
+        pass
+
     histogram_dict = {}
     for v in df['sensitive_feature'].unique():
 
@@ -37,8 +44,11 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
         dct = {}
         for i in result_df.index.levels[0]:
             dct[i] = result_df.xs(i, level='prediction_result_type')['bin_value_final'].values.tolist()
+        if cast_to_int:
+            histogram_dict[int(v)] = dct
+        else:
+            histogram_dict[v] = dct
 
-        histogram_dict[v] = dct
 
     return histogram_dict
 
