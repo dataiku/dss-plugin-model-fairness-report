@@ -7,4 +7,4 @@ numpy==1.16.6
 future==0.18.2
 joblib==0.14.1
 fairlearn== 0.4.6
-simplejson
+simplejson==3.17.2
