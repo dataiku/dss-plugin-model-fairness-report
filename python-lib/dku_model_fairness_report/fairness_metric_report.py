@@ -82,10 +82,10 @@ class ModelFairnessMetricReport(object):
     def _check(self):
         possible_outcomes = set(self.y_true.unique()).union(set(self.y_pred.unique()))
         if self.advantageous_outcome is not None and self.advantageous_outcome not in possible_outcomes:
-            raise ValueError('The chosen advantageous outcome, "{}", does not exist in either y_true or y_pred.'.format(self.advantageous_outcome))
+            raise ValueError('The chosen positive outcome, "{}", does not exist in either y_true or y_pred.'.format(self.advantageous_outcome))
 
         if len(possible_outcomes) != 2:
-            raise ValueError('There must be 2 distinct values as label, found {} possible values.'.format(len(possible_outcomes)))
+            raise ValueError('Only support binary classification, found {} possible values.'.format(len(possible_outcomes)))
 
     def _check_reference_group(self, reference_group, summary):
         if reference_group not in summary.get(DkuFairnessConstants.BY_GROUP).keys():

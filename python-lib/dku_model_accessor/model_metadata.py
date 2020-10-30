@@ -39,7 +39,7 @@ def _get_model_info_handler(saved_model_version_id):
     except Exception as e:
         from future.utils import raise_
         if "ordinal not in range(128)" in str(e):
-            raise_(Exception, "The plugin is using a python3 code-env, cannot load a python2 model.", sys.exc_info()[2])
+            raise_(Exception, "The plugin only supports python3, cannot load a python2 model.", sys.exc_info()[2])
         elif str(e) == "non-string names in Numpy dtype unpickling":
             raise_(Exception, "The plugin is using a python2 code-env, cannot load a python3 model.", sys.exc_info()[2])
         else:
