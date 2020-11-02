@@ -65,7 +65,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.demographic_parity}}</h4>
-        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
+        <div class="text">Max disparity compared to sensitive group ("{{referenceGroup}}")</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; generateChart('equalizedOdds')">
@@ -77,7 +77,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.equalized_odds}}</h4>
-        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
+        <div class="text">Max disparity compared to sensitive group ("{{referenceGroup}}")</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; generateChart('equalityOfOpportunity')">
@@ -89,7 +89,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2" >
         <h4 class="huge-title-sb">{{disparity.equality_of_opportunity}}</h4>
-        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
+        <div class="text">Max disparity compared to sensitive group ("{{referenceGroup}}")</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; generateChart('predictiveRateParity')">
@@ -101,7 +101,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.predictive_rate_parity}}</h4>
-        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
+        <div class="text">Max disparity compared to sensitive group ("{{referenceGroup}}")</div>
     </div>
   </div>
 </div>
