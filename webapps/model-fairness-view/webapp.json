@@ -1,7 +1,7 @@
 {
     "meta": {
         "label": "Model fairness report",
-        "description": "Compute several fairness metric of a model regarding different populations",
+        "description": "Compute fairness metrics of a model regarding different populations",
         "icon": "icon-group"
     },
     "baseType": "STANDARD",

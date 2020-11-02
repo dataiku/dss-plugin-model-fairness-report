@@ -65,7 +65,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.demographic_parity}}</h4>
-        <div class="text">Max disparity compared to chosen sensitive group</div>
+        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalizedOdds'}" ng-click="activeMetric = 'equalizedOdds'; generateChart('equalizedOdds')">
@@ -77,7 +77,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.equalized_odds}}</h4>
-        <div class="text">Max disparity compared to chosen sensitive group</div>
+        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'equalityOfOpportunity'}" ng-click="activeMetric = 'equalityOfOpportunity'; generateChart('equalityOfOpportunity')">
@@ -89,7 +89,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2" >
         <h4 class="huge-title-sb">{{disparity.equality_of_opportunity}}</h4>
-        <div class="text">Max disparity compared to chosen sensitive  group</div>
+        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
     </div>
   </div>
   <div class="card info-box rounded-0" ng-class="{highlight : activeMetric === 'predictiveRateParity'}" ng-click="activeMetric = 'predictiveRateParity'; generateChart('predictiveRateParity')">
@@ -101,7 +101,7 @@ for sensitive group
     </div>
     <div class="card-footer bg-transparent pt-2">
         <h4 class="huge-title-sb">{{disparity.predictive_rate_parity}}</h4>
-        <div class="text">Max disparity compared to chosen sensitive group</div>
+        <div class="text">Max disparity compared to sensitive group {{referenceGroup}}</div>
     </div>
   </div>
 </div>
@@ -109,23 +109,23 @@ for sensitive group
 
     <div class="text" ng-switch on = "activeMetric">
         <p ng-switch-when = "demographicParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures whether the number of positive predictions (those with value "{{label_list[1]}}") is equal between the advantaged groups and sensitive group ({{referenceGroup}}). <br/>
+            This metric measures whether the number of positive predictions (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) is equal between the advantaged groups and sensitive group (<span class="text-highlight">"{{referenceGroup}}"</span>). <br/>
             The measure does not consider whether the positive predictions were true or false, only how many positive predictions appear in each group. <br/>
             Disparity values close or equal to zero indicate equality or parity between the groups, while values close to one (or negative one) indicate imbalance in how many positive values are predicted in each group.
         </p>
         <p ng-switch-when = "equalizedOdds" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures whether the true positive rates and false positive rates are equal between the advantaged groups and sensitive group ({{referenceGroup}}).<br/>
-            It assesses the classifier’s ability to correctly predict positive values (those with value "{{label_list[1]}}") and the likelihood of incorrectly predicting positive values.<br/>
+            This metric measures whether the true positive rates and false positive rates are equal between the advantaged groups and sensitive group (<span class="text-highlight">"{{referenceGroup}}"</span>).<br/>
+            It assesses the classifier’s ability to correctly predict positive values (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) and the likelihood of incorrectly predicting positive values.<br/>
             If the disparity value is low, it means that the classifier finds true positives at a similar rate across subgroups and incorrectly assigns the positive class at the same rate among groups.
         </p>
         <p ng-switch-when = "equalityOfOpportunity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric is a relaxed version of "Equalized Odds" that only measures the true positive rate between the advantaged groups and sensitive group ({{referenceGroup}}).<br/>
-            When the disparity metric is close to zero, it means the classifier predicts true positive values (those with value "{{label_list[1]}}") at the same rate across groups. <br/>
+            This metric is a relaxed version of <span class="text-highlight">Equalized Odds</span> that only measures the true positive rate between the advantaged groups and sensitive group (<span class="text-highlight">"{{referenceGroup}}"</span>).<br/>
+            When the disparity metric is close to zero, it means the classifier predicts true positive values (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) at the same rate across groups. <br/>
             A value farther from zero indicates that the classifier is better at predicting true positives for one group over another.
         </p>
         <p ng-switch-when = "predictiveRateParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures the difference in precision between the advantaged groups and the sensitive groups ({{referenceGroup}}).<br/>
-            Precision is measured as the percentage of all predicted positives (those predicted with value "{{label_list[1]}}") that were actually true.
+            This metric measures the difference in precision between the advantaged groups and the sensitive groups (<span class="text-highlight">"{{referenceGroup}}"</span>).<br/>
+            Precision is measured as the percentage of all predicted positives (those predicted with value <span class="text-highlight">"{{label_list[1]}}"</span>) that were actually true.
             When the disparity metric is farther from zero, it indicates that the classifier predicts fewer false positives for one group than another.
         </p>
     </div>
