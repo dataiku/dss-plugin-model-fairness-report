@@ -42,6 +42,8 @@ def _get_model_info_handler(saved_model_version_id):
             raise_(Exception, "The plugin only supports python3, cannot load a python2 model.", sys.exc_info()[2])
         elif str(e) == "non-string names in Numpy dtype unpickling":
             raise_(Exception, "The plugin is using a python2 code-env, cannot load a python3 model.", sys.exc_info()[2])
+        elif str(e) == "Using saved models in python recipes is limited to models trained using the python engine":
+            raise_(Exception, "The plugin does not support Clustering model.", sys.exc_info()[2])
         else:
             raise_(Exception, "Fail to load saved model: {}".format(e), sys.exc_info()[2])
 

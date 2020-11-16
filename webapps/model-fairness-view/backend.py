@@ -2,10 +2,23 @@ import dataiku
 import logging
 import simplejson
 import traceback
-from dku_model_accessor import get_model_handler, ModelAccessor
+from dku_model_accessor import get_model_handler, ModelAccessor, DkuModelAccessorConstants
 from dku_webapp import remove_nan_from_list, convert_numpy_int64_to_int, get_metrics, get_histograms,DkuWebappConstants
 
 logger = logging.getLogger(__name__)
+
+@app.route("/check-model-type/<model_id>/<version_id>")
+def check_model_type(model_id, version_id):
+    try:
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
+        model_accessor = ModelAccessor(model_handler)
+
+        if model_accessor.get_prediction_type() in [DkuModelAccessorConstants.REGRRSSION_TYPE, DkuModelAccessorConstants.CLUSTERING_TYPE]:
+            raise ValueError('Model Fairness Report only supports binary classification model, not {}.'.format(model_accessor.get_prediction_type()))
+    except:
+        logger.error("{}. Check backend log for more details.".format(traceback.format_exc()))
+        return traceback.format_exc(), 500
 
 @app.route("/get-value-list/<model_id>/<version_id>/<column>")
 def get_value_list(model_id, version_id, column):

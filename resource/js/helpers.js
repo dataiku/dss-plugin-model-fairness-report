@@ -165,12 +165,13 @@ function draw(element, chosenMetric, data, label_list){
                 duration: 10,
             },
               tooltips: {
-                        mode: 'label',
+                mode: 'label',
               callbacks: {
-              label: function(tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label + ": " + numberWithCommas(tooltipItem.yLabel);
-              }
-              }
+                  label: function(tooltipItem, data) {
+                    return data.datasets[tooltipItem.datasetIndex].label + ": " + numberWithCommas(tooltipItem.yLabel)+'%';
+                }
+              },
+              displayColors: true
              },
             scales: {
               xAxes: [{
@@ -194,7 +195,7 @@ function draw(element, chosenMetric, data, label_list){
               gridLines: { display: false },
                scaleLabel: {
                     display: true,
-                    labelString: 'Population ratio',
+                    labelString: '% Population',
                     fontFamily: "'Source Sans Pro', sans-serif",
                     fontSize: 12
                   }

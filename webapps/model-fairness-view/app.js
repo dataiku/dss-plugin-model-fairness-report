@@ -23,6 +23,13 @@ let versionId = webAppConfig['versionId'];
                     $scope.createModal.error(e.data);
                 });
 
+            $http.get(getWebAppBackendUrl("check-model-type/"+modelId+"/"+versionId))
+                .then(function(response){
+                    console.log('All good')
+                }, function(e) {
+                    $scope.createModal.error(e.data);
+                });
+
             $scope.modal = {};
             $scope.removeModal = function(event) {
                 if (ModalService.remove($scope.modal)(event)) {
