@@ -25,6 +25,13 @@
 .dku-btn:hover {
     background-color: #dddddd;
 }
+
+.dku-btn:disabled {
+    background-color: #dddddd;
+      cursor: not-allowed;
+          pointer-events: none;
+}
+
 .dku-btn:active {
     background-color: #cccccc;
 }
@@ -36,6 +43,12 @@
 }
 .dku-btn-primary:hover {
     background: #62a3f5;
+}
+
+.dku-btn-primary:disabled {
+    background: #62a3f5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 .dku-btn-primary:active {
     background: #22a4d9;

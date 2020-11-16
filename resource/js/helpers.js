@@ -86,11 +86,11 @@ function markRunning(running) {
     if (running) {
         $('.running-state').show();
         $('.landing-page').hide();
-        $('.notrunning-state').hide();
+        $('#run-button').hide();
         $('.result-state').hide();
     } else {
         $('.running-state').hide();
-        $('.notrunning-state').show();
+        $('#run-button').show();
     }
 }
 

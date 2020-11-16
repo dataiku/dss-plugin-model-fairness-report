@@ -29,7 +29,8 @@ for sensitive group
         <option></option>
     </select>
     <div style="display: inline;">
-        <a class="dku-btn dku-btn-primary notrunning-state" id="run-button" type="button" ng-click="runAnalysis()" style="color: #FFFFFF;">COMPUTE</a>
+        <button class="dku-btn dku-btn-primary" id="run-button" type="button" ng-click="runAnalysis()" ng-disabled="sensitiveColumn == undefined || referenceGroup == undefined || advantageousOutcome == undefined" style="color: #FFFFFF;">COMPUTE</button>
+
         <span class="running-state" style="display: none;">Computing ...</span>
     </div>
 </div>

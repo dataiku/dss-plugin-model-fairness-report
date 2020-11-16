@@ -5,16 +5,15 @@ let versionId = webAppConfig['versionId'];
     'use strict';
     app.controller('vizController', function($scope, $http, $timeout, ModalService) {
             var chart_list = [];
+
             $scope.activeMetric = 'demographicParity';
             $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
                 .then(function(response){
                     $scope.columnList = response.data;
-                    //$scope.sensitiveColumn = response.data[0];
-                    //$scope.updateValueList();
+                    console.log($scope.sensitiveColumn)
                 }, function(e) {
                     $scope.createModal.error(e.data);
                 });
-
 
             $http.get(getWebAppBackendUrl("get-outcome-list/"+modelId+"/"+versionId))
                 .then(function(response){
