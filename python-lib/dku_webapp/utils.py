@@ -33,9 +33,13 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
         series_final = dfx.unstack().fillna(0).stack()
 
         computed_df = pd.DataFrame(series_final, columns=['bin_value_new'])
+
+        # we create a reference histogram df with default value = 0
         arrays = [['predicted_0_true_0', 'predicted_0_true_1', 'predicted_1_true_0', 'predicted_1_true_1'], np.arange(1, 11)]
         reference_df = pd.DataFrame(index=pd.MultiIndex.from_product(arrays, names=('prediction_result_type', 'bin_index')))
         reference_df['bin_value'] = 0
+
+        # by concating, we are sure that each subpop have all the bins
         result_df = pd.concat([reference_df, computed_df], axis=1, sort=False)
         # replace missing value by 0
         result_df['bin_value_final'] = result_df['bin_value_new'].fillna(result_df['bin_value'])
