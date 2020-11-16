@@ -20,7 +20,7 @@ app.service("ModalService", function() {
             }
             return true;
         }
-    }
+    };
     return {
         create: function(config) {
             return {
@@ -85,7 +85,7 @@ app.directive("modalBackground", function($compile) {
 function markRunning(running) {
     if (running) {
         $('.running-state').show();
-        $('.landing-page').hide()
+        $('.landing-page').hide();
         $('.notrunning-state').hide();
         $('.result-state').hide();
     } else {
@@ -108,11 +108,11 @@ function draw(element, chosenMetric, data, label_list){
       var numberWithCommas = function(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       };
-    var concatted_array = data['predicted_0_true_1'].concat(data['predicted_0_true_0'], data['predicted_1_true_1'], data['predicted_1_true_0'])
+    var concatted_array = data['predicted_0_true_1'].concat(data['predicted_0_true_0'], data['predicted_1_true_1'], data['predicted_1_true_0']);
     var max_y = Math.ceil( Math.max.apply(null, concatted_array) / 10) * 10;
     var label_x = ["0",  "", "", "", "", "", "", "", "", "1"];
 
-    var [opacity1, opacity2, opacity3, opacity4] = metricOpacityMapping[chosenMetric]
+    var [opacity1, opacity2, opacity3, opacity4] = metricOpacityMapping[chosenMetric];
 
     var class0 = label_list[0];
     var class1 =label_list[1];

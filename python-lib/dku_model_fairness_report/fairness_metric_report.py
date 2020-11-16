@@ -7,7 +7,6 @@ from dku_model_fairness_report.constants import DkuFairnessConstants
 
 logger = logging.getLogger(__name__)
 
-
 class ModelFairnessMetricReport(object):
     def __init__(self, y_true, y_pred, sensitive_feature_values, advantageous_outcome=None, sample_weight=None):
         self.y_true = y_true  # 1D array

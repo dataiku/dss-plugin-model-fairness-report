@@ -39,7 +39,7 @@ let versionId = webAppConfig['versionId'];
                 }, function(e) {
                     $scope.createModal.error(e.data);
                 });
-            }
+            };
 
             $scope.generateChart = function(chosenMetric) {
                 $timeout(function () {
@@ -50,7 +50,7 @@ let versionId = webAppConfig['versionId'];
                         chart_list.push(bar_chart);
                     }
                 });
-            }
+            };
 
             $scope.runAnalysis = function () {
                  markRunning(true);
@@ -65,7 +65,7 @@ let versionId = webAppConfig['versionId'];
                         $scope.populations = response.data.populations;
                         $scope.histograms = response.data.histograms;
                         $scope.disparity = response.data.disparity;
-                        $scope.label_list = response.data.labels
+                        $scope.label_list = response.data.labels;
                         $scope.population_list = Object.keys($scope.histograms);
                         $scope.generateChart('default');
                         $('.result-state').show();
