@@ -3,7 +3,7 @@ import logging
 import simplejson
 import traceback
 from dku_model_accessor import get_model_handler, ModelAccessor
-from dku_webapp import remove_nan_from_list, convert_numpy_int64_to_int, get_metrics, get_histograms
+from dku_webapp import remove_nan_from_list, convert_numpy_int64_to_int, get_metrics, get_histograms,DkuWebappConstants
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,10 @@ def get_value_list(model_id, version_id, column):
         test_df = model_accessor.get_original_test_df()
         value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
         filtered_value_list = remove_nan_from_list(value_list)
+
+        if len(filtered_value_list) > DkuWebappConstants.MAX_NUM_CATEGORIES:
+            raise ValueError('Column "{2}" has too many categories ({0}). Max {1} are allowed'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
+
         return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
         logger.error("{}. Check backend log for more details.".format(traceback.format_exc()))

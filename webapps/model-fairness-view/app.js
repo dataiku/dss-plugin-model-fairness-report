@@ -9,8 +9,8 @@ let versionId = webAppConfig['versionId'];
             $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
                 .then(function(response){
                     $scope.columnList = response.data;
-                    $scope.sensitiveColumn = response.data[0];
-                    $scope.updateValueList();
+                    //$scope.sensitiveColumn = response.data[0];
+                    //$scope.updateValueList();
                 }, function(e) {
                     $scope.createModal.error(e.data);
                 });
