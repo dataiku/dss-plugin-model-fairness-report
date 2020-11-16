@@ -1,10 +1,6 @@
 import dataiku
 import pandas as pd
 import numpy as np
-import logging
-from flask import request
-import simplejson
-import traceback
 from dku_model_accessor import get_model_handler, ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
