@@ -138,8 +138,8 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
             reference_group = int(reference_group)
         if test_df[sensitive_column].dtypes == float:
             reference_group = float(reference_group)
-    except:
-        logger.info('Sensitive column can not be casted to int')
+    except Exception as e:
+        logger.info('Sensitive column can not be casted to int. ', e)
         pass
 
     sensitive_feature_values = test_df[sensitive_column]
