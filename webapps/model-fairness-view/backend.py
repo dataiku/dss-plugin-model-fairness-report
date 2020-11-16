@@ -55,6 +55,13 @@ def get_outcome_list(model_id, version_id):
 @app.route('/get-data/<model_id>/<version_id>/<advantageous_outcome>/<sensitive_column>/<reference_group>')
 def get_data(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
     try:
+        if sensitive_column == 'undefined':
+            raise ValueError('Please choose a column.')
+        if reference_group == 'undefined':
+            raise ValueError('Please choose a sensitive group.')
+        if  advantageous_outcome == 'null':
+            raise ValueError('Please choose an outcome.')
+
         populations, disparity_dct, label_list = get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group)
         histograms = get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
         # the following strings are used only here, too lazy to turn them into constant variables
