@@ -36,7 +36,7 @@ def get_value_list(model_id, version_id, column):
         filtered_value_list = remove_nan_from_list(value_list)
 
         if len(filtered_value_list) > DkuWebappConstants.MAX_NUM_CATEGORIES:
-            raise ValueError('Column "{2}" has too many categories ({0}). Max {1} are allowed'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
+            raise ValueError('Column "{2}" has too many categories ({0}). Max {1} are allowed.'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
 
         return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
