@@ -1,12 +1,13 @@
 import dataiku
 import pandas as pd
 import numpy as np
+import logging
 from dku_model_accessor import get_model_handler, ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
 from dku_webapp.constants import DkuWebappConstants
 
-
+logger = logging.getLogger(__name__)
 
 def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values):
     df = pd.DataFrame()
@@ -18,8 +19,10 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     cast_to_int = False
     try: # check whether or not the column can be casted to int
         if np.array_equal(df['sensitive_feature'], df['sensitive_feature'].astype(int)):
+            logger.info('Casting sensitive column to int type')
             cast_to_int = True
     except:
+        logger.info('Sensitive column is not of int type')
         pass
 
     histogram_dict = {}
