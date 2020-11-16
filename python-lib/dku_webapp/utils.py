@@ -28,8 +28,8 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     histogram_dict = {}
     for v in df['sensitive_feature'].unique():
 
-        df2 = df[df['sensitive_feature'] == v]
-        dfx = np.round(100 * df2.groupby(['prediction_result_type', 'bin_index']).size() / len(df2), 3)
+        df_sub_ppopulation = df[df['sensitive_feature'] == v]
+        dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / len(df_sub_ppopulation), 3)
         series_final = dfx.unstack().fillna(0).stack()
 
         computed_df = pd.DataFrame(series_final, columns=['bin_value_new'])
