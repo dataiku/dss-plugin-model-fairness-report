@@ -16,6 +16,8 @@ def check_model_type(model_id, version_id):
 
         if model_accessor.get_prediction_type() in [DkuModelAccessorConstants.REGRRSSION_TYPE, DkuModelAccessorConstants.CLUSTERING_TYPE]:
             raise ValueError('Model Fairness Report only supports binary classification model.')
+
+        return 'ok'
     except:
         logger.error("{}. Check backend log for more details.".format(traceback.format_exc()))
         return traceback.format_exc(), 500

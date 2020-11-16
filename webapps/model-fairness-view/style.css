@@ -1,5 +1,12 @@
 @import '/static/public/styles/1.0.0/variables.css';
 
+
+.landing-page {
+    display: flex;
+    flex-direction: column;  /* make main axis vertical */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center;     /* center items horizontally, in this case */}
+    margin: auto;
 /* Buttons */
 
 .dku-btn {
