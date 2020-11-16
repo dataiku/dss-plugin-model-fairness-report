@@ -183,4 +183,6 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
 
     label_list = model_report.get_label_list()
 
-    return sorted(populations, key=lambda population: population[DkuWebappConstants.SIZE], reverse=True), disparity_dct, label_list
+    sorted_populations = sorted(populations, key=lambda population: population[DkuWebappConstants.SIZE], reverse=True)
+
+    return sorted_populations, disparity_dct, label_list
