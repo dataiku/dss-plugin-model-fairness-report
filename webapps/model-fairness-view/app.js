@@ -59,7 +59,6 @@ let versionId = webAppConfig['versionId'];
 
             $scope.runAnalysis = function () {
                  markRunning(true);
-                 $scope.activeMetric = 'demographicParity';
                  $('#error_message').html('');
                  // remove old charts
                 for (var j = 0; j < chart_list.length; j++) {
