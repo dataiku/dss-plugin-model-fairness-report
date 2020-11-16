@@ -1,1 +1,2 @@
-from dku_model_fairness_report.fairness_metric_report import ModelFairnessMetricReport, ModelFairnessMetric
+from dku_model_fairness_report.fairness_metric_report import ModelFairnessMetricReport
+from dku_model_fairness_report.fairness_metrics import ModelFairnessMetric
