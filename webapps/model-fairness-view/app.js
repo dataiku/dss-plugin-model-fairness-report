@@ -5,7 +5,6 @@ let versionId = webAppConfig['versionId'];
     'use strict';
     app.controller('vizController', function($scope, $http, $timeout, ModalService) {
             var chart_list = [];
-
             $scope.activeMetric = 'demographicParity';
             $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
                 .then(function(response){
@@ -26,7 +25,11 @@ let versionId = webAppConfig['versionId'];
                 .then(function(response){
                     console.log('All good')
                 }, function(e) {
-                    $scope.createModal.error(e.data);
+                    $('.landing-page').hide();
+                    $('.error-page').show();
+                    $scope.columnList = [];
+                    $scope.valueList = [];
+                    $scope.outcomeList = [];
                 });
 
             $scope.modal = {};
