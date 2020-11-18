@@ -16,7 +16,6 @@ def check_model_type(model_id, version_id):
 
         if model_accessor.get_prediction_type() in [DkuModelAccessorConstants.REGRRSSION_TYPE, DkuModelAccessorConstants.CLUSTERING_TYPE]:
             raise ValueError('Model Fairness Report only supports binary classification model.')
-
         return 'ok'
     except:
         logger.error("{}. Check backend log for more details.".format(traceback.format_exc()))
@@ -49,7 +48,7 @@ def get_feature_list(model_id, version_id):
         model = dataiku.Model(model_id)
         model_handler = get_model_handler(model, version_id=version_id)
         model_accessor = ModelAccessor(model_handler)
-        column_list = model_accessor.get_selected_features()
+        column_list = model_accessor.get_selected_and_rejected_features()
         return simplejson.dumps(column_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
         logger.error("{}. Check backend log for more details.".format(traceback.format_exc()))

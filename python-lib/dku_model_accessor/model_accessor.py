@@ -95,9 +95,22 @@ class ModelAccessor(object):
             DkuModelAccessorConstants.FEATURE)
 
     def get_selected_features(self):
+        """
+        Return only features used in the model
+        """
         selected_features = []
         for feat, feat_info in self.get_per_feature().items():
             if feat_info.get('role') == 'INPUT':
+                selected_features.append(feat)
+        return selected_features
+
+    def get_selected_and_rejected_features(self):
+        """
+        Return all features in the input dataset except the target
+        """
+        selected_features = []
+        for feat, feat_info in self.get_per_feature().items():
+            if feat_info.get('role') in ['INPUT', 'REJECT']:
                 selected_features.append(feat)
         return selected_features
 
