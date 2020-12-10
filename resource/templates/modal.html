@@ -1,0 +1,12 @@
+<div class="dku-modal">
+    <div class="dku-title dku-modal-title">
+        <div>{{modal.title}}</div>
+        <i class="icon icon-grey icon-remove" ng-click="removeModal()"></i>
+    </div>
+    <div class="dku-modal-body" ng-show="modal.msg" ng-class="{'dku-modal-body-error': modal.type === 'error'}">
+        {{modal.msg}}
+    </div>
+    <div>
+            <button type="button" class="button dku-button-modal dku-button-modal-div" ng-click="(modal.confirmAction && modal.confirmAction()); removeModal();" ng-disabled="modal.type == 'prompt' && promptForm.$invalid">Ok</button>
+    </div>
+</div>
