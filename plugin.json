@@ -3,11 +3,11 @@
     "version": "1.0.0",
     "meta": {
         "label": "Model Fairness Report",
-        "description": "Compute fairness metrics.",
-        "author": "Dataiku (Du Phan)",
-        "icon": "icon-anchor",
+        "description": "Get insight on the fairness of a model.",
+        "author": "Dataiku (Du PHAN)",
+        "icon": "icon-group",
         "licenseInfo": "Apache Software License",
-        "url": "https://www.dataiku.com/product/plugins/model-fairness-report/", //warning, update the webapp UI if you change
+        "url": "https://www.dataiku.com/product/plugins/model-fairness-report/",
         "tags": ["Machine Learning"]
     }
 }

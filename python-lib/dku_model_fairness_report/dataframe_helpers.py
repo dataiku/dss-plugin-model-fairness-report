@@ -8,7 +8,6 @@ import logging
 import sys
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='Model Drift Plugin | %(levelname)s - %(message)s')
 
 logger.info("Python version: {}".format(sys.version))
 # python3 does not have basetring
