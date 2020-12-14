@@ -14,7 +14,7 @@ Please see our [official plugin page](https://www.dataiku.com/product/plugins/mo
 
 ## Changelog
 
-**Version 1.0.0 (2020-11)**
+**Version 1.0.0 (2020-12)**
 
 * Initial release
 * Model view component
