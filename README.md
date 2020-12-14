@@ -23,7 +23,4 @@ You can log feature requests or issues on our [dedicated Github repository](http
 
 # License
 
-The Model fairness report plugin is:
-
-   Copyright (c) 2020 Dataiku SAS
-   Licensed under the [MIT License](LICENSE.md).
+This plugin is distributed under the Apache License version 2.0.
