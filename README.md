@@ -1,7 +1,6 @@
 # Model fairness report
 
-Fairness is an important and rising topic of ML in the last few years. Before even starting to think about how to solve the problem of model bias, it is crucial to learn more about how biased a model is, thus this plugin.
-
+Evaluating the fairness of machine learning models has been a topic of both academic and business interest in recent years. However, before prescribing any resolution to the problem of model bias, it is crucial to learn more about how biased a model is, by measuring some fairness metrics. This plugin is intended to help you with this measurement task.
 
 
 ## Scope of the plugin
