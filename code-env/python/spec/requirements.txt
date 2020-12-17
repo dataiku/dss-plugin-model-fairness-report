@@ -1,4 +1,3 @@
-fairlearn== 0.4.6
 flask==1.1.2
 future==0.18.2
 joblib==0.14.1

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import numpy as np
-from fairlearn.metrics import group_summary
 from sklearn.utils import Bunch
 from dku_model_fairness_report.constants import DkuFairnessConstants
+from dku_model_fairness_report.fairness_metrics import group_summary
 
 logger = logging.getLogger(__name__)
 
