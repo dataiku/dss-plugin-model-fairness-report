@@ -64,6 +64,10 @@ class ModelFairnessMetric(object):
 
 
 
+"""
+Implementation of group_summary function from fairlearn v0.4.6: https://github.com/fairlearn/fairlearn 
+"""
+
 def _convert_to_ndarray_and_squeeze(target):
     """Convert input to a `numpy.ndarray` and calls squeeze (to dispose of unit length dimensions).
 
