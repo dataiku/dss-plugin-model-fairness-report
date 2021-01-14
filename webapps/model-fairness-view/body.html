@@ -122,22 +122,22 @@ for group
 
     <div class="text" ng-switch on = "activeMetric">
         <p ng-switch-when = "demographicParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures whether the number of positive predictions (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) is equal between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and other groups defined by the sensitive attribute. <br/>
+            This metric measures whether the number of positive predictions (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) is equal between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and the other groups defined by the sensitive attribute. <br/>
             The measure does not consider whether the positive predictions were true or false, only how many positive predictions appear in each group. <br/>
             Disparity values close or equal to zero indicate equality or parity between the groups, while values close to one (or negative one) indicate imbalance in how many positive values are predicted in each group.
         </p>
         <p ng-switch-when = "equalizedOdds" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures whether the true positive rates and false positive rates are equal between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and other groups defined by the sensitive attribute.<br/>
+            This metric measures whether the true positive rates and false positive rates are equal between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and the other groups defined by the sensitive attribute.<br/>
             It assesses the classifier’s ability to correctly predict positive values (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) and the likelihood of incorrectly predicting positive values.<br/>
             If the disparity value is low, it means that the classifier finds true positives at a similar rate across subgroups and incorrectly assigns the positive class at the same rate among groups.
         </p>
         <p ng-switch-when = "equalityOfOpportunity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric is a relaxed version of <span class="text-highlight">Equalized Odds</span> that only measures the true positive rate between between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and other groups defined by the sensitive attribute.<br/>
+            This metric is a relaxed version of <span class="text-highlight">Equalized Odds</span> that only measures the true positive rate between between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and the other groups defined by the sensitive attribute.<br/>
             When the disparity metric is close to zero, it means the classifier predicts true positive values (those with value <span class="text-highlight">"{{label_list[1]}}"</span>) at the same rate across groups. <br/>
             A value farther from zero indicates that the classifier is better at predicting true positives for one group over another.
         </p>
         <p ng-switch-when = "predictiveRateParity" style="padding-top:16px; padding-bottom:16px margin-bottom:0px">
-            This metric measures the difference in precision between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and other groups defined by the sensitive attribute.<br/>
+            This metric measures the difference in precision between the chosen group (<span class="text-highlight">"{{referenceGroup}}"</span>) and the other groups defined by the sensitive attribute.<br/>
             Precision is measured as the percentage of all predicted positives (those predicted with value <span class="text-highlight">"{{label_list[1]}}"</span>) that were actually true.
             When the disparity metric is farther from zero, it indicates that the classifier predicts fewer false positives for one group than another.
         </p>
