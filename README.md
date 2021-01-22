@@ -22,5 +22,6 @@ Please see our [official plugin page](https://www.dataiku.com/product/plugins/mo
 You can log feature requests or issues on our [dedicated Github repository](https://github.com/dataiku/dss-plugin-model-fairness-report/issues).
 
 # License
+This plugin is:
 
-This plugin is distributed under the Apache License version 2.0.
+Copyright (c) 2021 Dataiku SAS Licensed under the Apache License version 2.0.
