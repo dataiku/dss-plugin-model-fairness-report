@@ -11,6 +11,7 @@
     "roles": [
         {
             "type": "SAVED_MODEL",
+            "contentType": "prediction",
             "targetParamsKey": "modelId",
             "pathParamsKey": "versionId"
         }
