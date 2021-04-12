@@ -10,12 +10,13 @@ from dku_webapp.constants import DkuWebappConstants
 logger = logging.getLogger(__name__)
 
 def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values):
-    df = pd.DataFrame()
-    # the following strings are used only here, too lazy to turn them into constant variables
-    df['bin_index'] = np.digitize(y_pred_proba, np.arange(0, 1, step=0.1))  # 10 bins
-    df['prediction_result_type'] = get_prediction_result_type(y_true, y_pred, advantageous_outcome)
-    df['sensitive_feature'] = sensitive_feature_values
 
+    # the following strings are used only here, too lazy to turn them into constant variables
+    dct = {}
+    dct['bin_index'] = np.digitize(y_pred_proba, np.arange(0, 1, step=0.1))  # 10 bins
+    dct['prediction_result_type'] = get_prediction_result_type(y_true, y_pred, advantageous_outcome)
+    dct['sensitive_feature'] = sensitive_feature_values
+    df = pd.DataFrame.from_dict(dct)
     cast_to_int = False
     try: # check whether or not the column can be casted to int
         if np.array_equal(df['sensitive_feature'], df['sensitive_feature'].astype(int)):
@@ -27,7 +28,6 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
 
     histogram_dict = {}
     for v in df['sensitive_feature'].unique():
-
         df_sub_ppopulation = df[df['sensitive_feature'] == v]
         dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / len(df_sub_ppopulation), 3)
         series_final = dfx.unstack().fillna(0).stack()
@@ -101,7 +101,8 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
     model_handler = get_model_handler(model, version_id=version_id)
     model_accessor = ModelAccessor(model_handler)
 
-    test_df = model_accessor.get_original_test_df()
+    raw_test_df = model_accessor.get_original_test_df()
+    test_df = raw_test_df.dropna(subset=[sensitive_column])
     target_variable = model_accessor.get_target_variable()
 
     y_true = test_df.loc[:, target_variable]
@@ -113,7 +114,6 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
     sensitive_feature_values = test_df[sensitive_column]
 
     return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
-
 
 
 def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
