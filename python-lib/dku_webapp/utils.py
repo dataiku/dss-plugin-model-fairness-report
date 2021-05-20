@@ -6,6 +6,8 @@ from dku_model_accessor import get_model_handler, ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
 from dku_webapp.constants import DkuWebappConstants
+from dataiku.customwebapp import get_webapp_config
+from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +99,14 @@ def remove_nan_from_list(lst):
 
 def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column):
 
-    model = dataiku.Model(model_id)
-    model_handler = get_model_handler(model, version_id=version_id)
-    model_accessor = ModelAccessor(model_handler)
+    fmi = get_webapp_config().get("trainedModelFullModelId")
+    if fmi is None:
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
+        model_accessor = ModelAccessor(model_handler)
+    else:
+        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+        model_accessor = ModelAccessor(original_model_handler)
 
     raw_test_df = model_accessor.get_original_test_df()
     test_df = raw_test_df.dropna(subset=[sensitive_column])
@@ -118,9 +125,14 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
 
 def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
 
-    model = dataiku.Model(model_id)
-    model_handler = get_model_handler(model, version_id=version_id)
-    model_accessor = ModelAccessor(model_handler)
+    fmi = get_webapp_config().get("trainedModelFullModelId")
+    if fmi is None:
+        model = dataiku.Model(model_id)
+        model_handler = get_model_handler(model, version_id=version_id)
+        model_accessor = ModelAccessor(model_handler)
+    else:
+        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+        model_accessor = ModelAccessor(original_model_handler)
 
     test_df = model_accessor.get_original_test_df()
     target_variable = model_accessor.get_target_variable()

@@ -2,6 +2,8 @@ import dataiku
 import logging
 import simplejson
 import traceback
+from dataiku.customwebapp import get_webapp_config
+from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 from dku_model_accessor import get_model_handler, ModelAccessor, DkuModelAccessorConstants
 from dku_webapp import remove_nan_from_list, convert_numpy_int64_to_int, get_metrics, get_histograms,DkuWebappConstants
 
@@ -10,9 +12,14 @@ logger = logging.getLogger(__name__)
 @app.route("/check-model-type/<model_id>/<version_id>")
 def check_model_type(model_id, version_id):
     try:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
+        fmi = get_webapp_config().get("trainedModelFullModelId")
+        if fmi is None:
+            model = dataiku.Model(model_id)
+            model_handler = get_model_handler(model, version_id=version_id)
+            model_accessor = ModelAccessor(model_handler)
+        else:
+            original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+            model_accessor = ModelAccessor(original_model_handler)
 
         if model_accessor.get_prediction_type() in [DkuModelAccessorConstants.REGRRSSION_TYPE, DkuModelAccessorConstants.CLUSTERING_TYPE]:
             raise ValueError('Model Fairness Report only supports binary classification model.')
@@ -27,15 +34,21 @@ def get_value_list(model_id, version_id, column):
         if column == 'undefined' or column == 'null':
             raise ValueError('Please choose a column.')
 
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
+        fmi = get_webapp_config().get("trainedModelFullModelId")
+        if fmi is None:
+            model = dataiku.Model(model_id)
+            model_handler = get_model_handler(model, version_id=version_id)
+            model_accessor = ModelAccessor(model_handler)
+        else:
+            original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+            model_accessor = ModelAccessor(original_model_handler)
+
         test_df = model_accessor.get_original_test_df()
         value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
         filtered_value_list = remove_nan_from_list(value_list)
 
         if len(filtered_value_list) > DkuWebappConstants.MAX_NUM_CATEGORIES:
-            raise ValueError('Column "{2}" has too many categories ({0}). Max {1} are allowed.'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
+            raise ValueError('Column "{2}" is either of numerical type or has too many categories ({0}). Max {1} are allowed.'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
 
         return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
@@ -45,9 +58,15 @@ def get_value_list(model_id, version_id, column):
 @app.route('/get-feature-list/<model_id>/<version_id>')
 def get_feature_list(model_id, version_id):
     try:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
+        fmi = get_webapp_config().get("trainedModelFullModelId")
+        if fmi is None:
+            model = dataiku.Model(model_id)
+            model_handler = get_model_handler(model, version_id=version_id)
+            model_accessor = ModelAccessor(model_handler)
+        else:
+            original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+            model_accessor = ModelAccessor(original_model_handler)
+
         column_list = model_accessor.get_selected_and_rejected_features()
         return simplejson.dumps(column_list, ignore_nan=True, default=convert_numpy_int64_to_int)
     except:
@@ -57,9 +76,15 @@ def get_feature_list(model_id, version_id):
 @app.route('/get-outcome-list/<model_id>/<version_id>')
 def get_outcome_list(model_id, version_id):
     try:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
+        fmi = get_webapp_config().get("trainedModelFullModelId")
+        if fmi is None:
+            model = dataiku.Model(model_id)
+            model_handler = get_model_handler(model, version_id=version_id)
+            model_accessor = ModelAccessor(model_handler)
+        else:
+            original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
+            model_accessor = ModelAccessor(original_model_handler)
+
         # note: sometimes when the dataset is very unbalanced, the original_test_df does not have all the target values
         test_df = model_accessor.get_original_test_df()
         target = model_accessor.get_target_variable()
