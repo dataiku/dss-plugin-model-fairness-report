@@ -1,6 +1,6 @@
 {
     "id": "model-fairness-report",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "meta": {
         "label": "Model Fairness Report",
         "description": "Get insight on the fairness of a model.",

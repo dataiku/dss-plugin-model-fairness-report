@@ -13,6 +13,8 @@ This plugin offers DSS component to monitor the fairness of a model regarding a 
 Please see our [official plugin page](https://www.dataiku.com/product/plugins/model-fairness-report/) for installation.
 
 ## Changelog
+**Version 1.0.7 (2022-03)**
+* Add support for LightGBM
 
 **Version 1.0.0 (2020-12)**
 
