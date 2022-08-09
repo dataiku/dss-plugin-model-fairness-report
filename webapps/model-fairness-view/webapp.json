@@ -7,7 +7,6 @@
     "baseType": "STANDARD",
     "hasBackend": "true",
     "standardWebAppLibraries": ["jquery", "dataiku", "font_awesome"],
-    "virtualWebAppAffinity": "PREFER_VIRTUAL",
     "roles": [
         {
             "type": "SAVED_MODEL",
