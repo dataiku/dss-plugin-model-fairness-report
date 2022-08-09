@@ -12,12 +12,16 @@
         {
             "type": "SAVED_MODEL",
             "contentType": "prediction",
+            "backendTypes": ["PY_MEMORY"],
+            "predictionTypes": ["BINARY_CLASSIFICATION", "MULTICLASS", "REGRESSION"],
             "targetParamsKey": "modelId",
             "pathParamsKey": "versionId"
         },
         {
           "type": "ANALYSIS",
           "contentType": "prediction",
+          "backendTypes": ["PY_MEMORY"],
+          "predictionTypes": ["BINARY_CLASSIFICATION", "MULTICLASS", "REGRESSION"],
           "targetParamsKey": "trainedModelFullModelId"
         }
     ],
