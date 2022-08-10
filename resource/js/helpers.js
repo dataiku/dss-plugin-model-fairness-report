@@ -1,16 +1,5 @@
 'use strict';
 
-app.directive('dkuIndeterminate', function() {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attributes) {
-            scope.$watch(attributes.dkuIndeterminate, function(value) {
-                element.prop('indeterminate', !!value);
-            });
-        }
-    };
-});
-
 app.service("ModalService", function() {
     const remove = function(config) {
         return function(event) {
