@@ -7,17 +7,20 @@
     "baseType": "STANDARD",
     "hasBackend": "true",
     "standardWebAppLibraries": ["jquery", "dataiku", "font_awesome"],
-    "virtualWebAppAffinity": "PREFER_VIRTUAL",
     "roles": [
         {
             "type": "SAVED_MODEL",
             "contentType": "prediction",
+            "backendTypes": ["PY_MEMORY"],
+            "predictionTypes": ["BINARY_CLASSIFICATION"],
             "targetParamsKey": "modelId",
             "pathParamsKey": "versionId"
         },
         {
           "type": "ANALYSIS",
           "contentType": "prediction",
+          "backendTypes": ["PY_MEMORY"],
+          "predictionTypes": ["BINARY_CLASSIFICATION"],
           "targetParamsKey": "trainedModelFullModelId"
         }
     ],
