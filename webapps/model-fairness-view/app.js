@@ -1,6 +1,3 @@
-let webAppConfig = dataiku.getWebAppConfig();
-let modelId = webAppConfig['modelId'];
-let versionId = webAppConfig['versionId'];
 (function() {
     'use strict';
     app.controller('VizController', function($scope, $http, $timeout, ModalService, ChartService) {
@@ -12,32 +9,30 @@ let versionId = webAppConfig['versionId'];
         $scope.activeMetric = 'demographicParity';
         $scope.hasResults = false;
 
-        $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
-            .then(function(response){
-                $scope.columnList = response.data;
-            }, function(e) {
-                ModalService.createBackendErrorModal($scope, e.data);
-            });
+        $http.get(getWebAppBackendUrl("check-model-type"))
+            .then(function() {
+                $http.get(getWebAppBackendUrl("get-feature-list"))
+                    .then(function(response) {
+                        $scope.columnList = response.data;
+                    }, function(e) {
+                        ModalService.createBackendErrorModal($scope, e.data);
+                    });
 
-        $http.get(getWebAppBackendUrl("get-outcome-list/"+modelId+"/"+versionId))
-            .then(function(response){
-                $scope.outcomeList = response.data;
-                $scope.advantageousOutcome = $scope.outcomeList[0];
-            }, function(e) {
-                ModalService.createBackendErrorModal($scope, e.data);
-            });
-
-        $http.get(getWebAppBackendUrl("check-model-type/"+modelId+"/"+versionId))
-            .then(function(response){
-                console.log('All good')
-            }, function(e) {
-                ModalService.createBackendErrorModal($scope, e.data);
-            });
+                $http.get(getWebAppBackendUrl("get-outcome-list"))
+                    .then(function(response) {
+                        $scope.outcomeList = response.data;
+                        $scope.advantageousOutcome = $scope.outcomeList[0];
+                    }, function(e) {
+                        ModalService.createBackendErrorModal($scope, e.data);
+                    });
+                    }, function(e) {
+                        ModalService.createBackendErrorModal($scope, e.data);
+                    });
 
         $scope.updateValueList = function(){
-            $http.get(getWebAppBackendUrl("get-value-list/"+modelId+"/"+versionId+"/"+$scope.sensitiveColumn))
-                .then(function(response){
-                    $scope.valueList = response.data
+            $http.get(getWebAppBackendUrl("get-value-list/" + $scope.sensitiveColumn))
+                .then(function({data}){
+                    $scope.valueList = data
             }, function(e) {
                 ModalService.createBackendErrorModal($scope, e.data);
             });
@@ -63,7 +58,7 @@ let versionId = webAppConfig['versionId'];
             });
 
             $scope.loadingAnalysisData = true;
-            $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
+            $http.get(getWebAppBackendUrl(`get-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
                 .then(function({data}) {
                     $scope.hasResults = true;
 

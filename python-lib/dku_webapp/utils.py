@@ -2,7 +2,7 @@ import dataiku
 import pandas as pd
 import numpy as np
 import logging
-from dku_model_accessor import get_model_handler, ModelAccessor
+from dku_model_accessor import ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
 from dku_webapp.constants import DkuWebappConstants
@@ -97,17 +97,7 @@ def remove_nan_from_list(lst):
     return new_list
 
 
-def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column):
-
-    fmi = get_webapp_config().get("trainedModelFullModelId")
-    if fmi is None:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
-    else:
-        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
-        model_accessor = ModelAccessor(original_model_handler)
-
+def get_histograms(model_accessor, advantageous_outcome, sensitive_column):
     raw_test_df = model_accessor.get_original_test_df()
     test_df = raw_test_df.dropna(subset=[sensitive_column])
     target_variable = model_accessor.get_target_variable()
@@ -123,17 +113,7 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
     return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
 
 
-def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
-
-    fmi = get_webapp_config().get("trainedModelFullModelId")
-    if fmi is None:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
-    else:
-        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
-        model_accessor = ModelAccessor(original_model_handler)
-
+def get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group):
     test_df = model_accessor.get_original_test_df()
     target_variable = model_accessor.get_target_variable()
     test_df.dropna(subset=[sensitive_column, target_variable], how='any', inplace=True)
