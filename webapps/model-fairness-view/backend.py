@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 model_accessor = ModelAccessor()
 
-@app.route("/check-model-type")
-def check_model_type():
+@app.route("/set-model")
+def set_model():
     try:
         fmi = get_webapp_config().get("trainedModelFullModelId")
         if fmi is None:
@@ -29,7 +29,7 @@ def check_model_type():
             raise ValueError('Model Fairness Report only supports binary classification model.')
         return 'ok'
     except:
-        logger.error("When trying to call check-model-type endpoint: {}.".format(traceback.format_exc()))
+        logger.error("When trying to call set-model endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
 
 @app.route("/get-value-list/<column>")

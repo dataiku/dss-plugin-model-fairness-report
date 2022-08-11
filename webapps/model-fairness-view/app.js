@@ -9,7 +9,7 @@
         $scope.activeMetric = 'demographicParity';
         $scope.hasResults = false;
 
-        $http.get(getWebAppBackendUrl("check-model-type"))
+        $http.get(getWebAppBackendUrl("set-model"))
             .then(function() {
                 $http.get(getWebAppBackendUrl("get-feature-list"))
                     .then(function(response) {
