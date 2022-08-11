@@ -3,7 +3,7 @@ let modelId = webAppConfig['modelId'];
 let versionId = webAppConfig['versionId'];
 (function() {
     'use strict';
-    app.controller('vizController', function($scope, $http, $timeout, ModalService) {
+    app.controller('VizController', function($scope, $http, $timeout, ModalService) {
             var chart_list = [];
             $scope.activeMetric = 'demographicParity';
             $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
