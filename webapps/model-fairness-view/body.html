@@ -39,13 +39,6 @@
         </div>
     </div>
 
-    <div ng-if="modal.type"
-        class="modal-background"
-        tabindex=0
-        ng-keyup="$event.keyCode == 27 && removeModal()"
-        ng-click="removeModal($event)">
-    </div>
-
     <div class="padtopbot16" ng-if="!loadingAnalysisData && !hasResults">
         <div class="ultralarge-title-sb mtop16">Model Fairness Report</div>
         <div class="grand-title-r">

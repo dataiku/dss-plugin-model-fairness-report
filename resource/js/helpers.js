@@ -1,75 +1,44 @@
 'use strict';
 
 (function() {
-    app.service("ModalService", function() {
-        const remove = function(config) {
-            return function(event) {
-                if (event && !event.target.className.includes("dku-modal-background")) return false;
-                for (const key in config) {
-                    delete config[key];
+    app.service("ModalService", function($compile, $http) {
+        const DEFAULT_MODAL_TEMPLATE = "/plugins/model-fairness-report/resource/templates/modal.html";
+
+        function create(scope, config, templateUrl=DEFAULT_MODAL_TEMPLATE) {
+            $http.get(templateUrl).then(function(response) {
+                const template = response.data;
+                const newScope = scope.$new();
+                const element = $compile(template)(newScope);
+
+                angular.extend(newScope, config);
+
+                newScope.close = function(event) {
+                    if (event && !event.target.className.includes("modal-background")) return;
+                    element.remove();
+                    newScope.$emit("closeModal");
+                };
+
+                if (newScope.promptConfig && newScope.promptConfig.conditions) {
+                    const inputField = element.find("input");
+                    for (const attr in newScope.promptConfig.conditions) {
+                        inputField.attr(attr, newScope.promptConfig.conditions[attr]);
+                    }
+                    $compile(inputField)(newScope);
                 }
-                return true;
-            }
+
+                angular.element("body").append(element);
+                element.focus();
+            });
         };
         return {
-            create: function(config) {
-                return {
-                    confirm: function(msg, title, confirmAction) {
-                        Object.assign(config, {
-                            type: "confirm",
-                            msg: msg,
-                            title: title,
-                            confirmAction: confirmAction
-                        });
-                    },
-                    error: function(msg) {
-                        Object.assign(config, {
-                            type: "error",
-                            msg: msg,
-                            title: "Backend error"
-                        });
-                    },
-                    alert: function(msg, title) {
-                        Object.assign(config, {
-                            type: "alert",
-                            msg: msg,
-                            title: title
-                        });
-                    },
-                    prompt: function(inputLabel, confirmAction, res, title, msg, attrs) {
-                        Object.assign(config, {
-                            type: "prompt",
-                            inputLabel: inputLabel,
-                            promptResult: res,
-                            title: title,
-                            msg: msg,
-                            conditions: attrs,
-                            confirmAction: function() {
-                                confirmAction(config.promptResult);
-                            }
-                        });
-                    }
-                };
+            createBackendErrorModal: function(scope, errorMsg) {
+                create(scope, {
+                    title: 'Backend error',
+                    msgConfig: { error: true, msg: errorMsg }
+                }, DEFAULT_MODAL_TEMPLATE);
             },
-            remove: remove
-        }
-    });
-
-    app.directive("modalBackground", function($compile) {
-        return {
-            scope: true,
-            restrict: "C",
-            templateUrl: "/plugins/model-fairness-report/resource/templates/modal.html",
-            link: function(scope, element) {
-                if (scope.modal.conditions) {
-                    const inputField = element.find("input");
-                    for (const attr in scope.modal.conditions) {
-                        inputField.attr(attr, scope.modal.conditions[attr]);
-                    }
-                    $compile(inputField)(scope);
-                }
-            }
-        }
+            create
+        };
     });
 
     const metricOpacityMapping = {

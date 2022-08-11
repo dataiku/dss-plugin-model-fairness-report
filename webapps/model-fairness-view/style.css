@@ -400,10 +400,20 @@ canvas {
     padding-bottom: 12px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     background-color: var(--white);
+    box-sizing: unset;
 }
 
 .dku-modal-title {
     justify-content: space-between;
+}
+
+.icon-grey {
+    color: var(--grey-lighten-2);
+    cursor: pointer;
+}
+
+.icon-grey:hover {
+    color: var(--grey-lighten-4);
 }
 
 .dku-modal-body {
@@ -412,10 +422,9 @@ canvas {
     white-space: pre-line;
     text-align: justify;
     font-size: 14px;
-
 }
 
-.dku-modal-body-error {
+.dku-modal-body--error {
     color: var(--error-red);
 }
 
@@ -429,7 +438,7 @@ canvas {
     max-width: 80%;
 }
 
-.modal-background {
+.dku-modal-background {
     display: flex;
     justify-content: center;
     align-items: center;
