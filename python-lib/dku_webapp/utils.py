@@ -2,12 +2,9 @@ import dataiku
 import pandas as pd
 import numpy as np
 import logging
-from dku_model_accessor import ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
 from dku_webapp.constants import DkuWebappConstants
-from dataiku.customwebapp import get_webapp_config
-from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 
 logger = logging.getLogger(__name__)
 
