@@ -3,9 +3,11 @@ let modelId = webAppConfig['modelId'];
 let versionId = webAppConfig['versionId'];
 (function() {
     'use strict';
-    app.controller('VizController', function($scope, $http, $timeout, ModalService) {
+    app.controller('VizController', function($scope, $http, $timeout, ModalService, ChartService) {
             var chart_list = [];
             $scope.activeMetric = 'demographicParity';
+            $scope.hasResults = false;
+
             $http.get(getWebAppBackendUrl("get-feature-list/"+modelId+"/"+versionId))
                 .then(function(response){
                     $scope.columnList = response.data;
@@ -25,11 +27,7 @@ let versionId = webAppConfig['versionId'];
                 .then(function(response){
                     console.log('All good')
                 }, function(e) {
-                    $('.landing-page').hide();
-                    $('.error-page').show();
-                    $scope.columnList = [];
-                    $scope.valueList = [];
-                    $scope.outcomeList = [];
+                    $scope.createModal.error(e.data);
                 });
 
             $scope.modal = {};
@@ -54,31 +52,33 @@ let versionId = webAppConfig['versionId'];
                     for (var i = 0; i < $scope.populations.length; i++) {
                         var population = $scope.populations[i]['name'];
                         var element = $("#bar-chart-"+i);
-                        var bar_chart = draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
+                        var bar_chart = ChartService.draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
                         chart_list.push(bar_chart);
                     }
                 });
             };
 
             $scope.runAnalysis = function () {
-                 markRunning(true);
-                 $('#error_message').html('');
-                 // remove old charts
-                for (var j = 0; j < chart_list.length; j++) {
-                        chart_list[j].destroy();
-                };
+                // remove old charts
+                chart_list.forEach(function(chart) {
+                    chart.destroy();
+                });
+
+                $scope.loadingAnalysisData = true;
                 $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
-                    .then(function(response){
+                    .then(function(response) {
+                        $scope.hasResults = true;
+
                         $scope.populations = response.data.populations;
                         $scope.histograms = response.data.histograms;
                         $scope.disparity = response.data.disparity;
                         $scope.label_list = response.data.labels;
                         $scope.population_list = Object.keys($scope.histograms);
                         $scope.generateChart('default');
-                        $('.result-state').show();
-                        markRunning(false);
+
+                        $scope.loadingAnalysisData = false;
                 }, function(e) {
-                    markRunning(false);
+                    $scope.loadingAnalysisData = false;
                     $scope.createModal.error(e.data);
                 });
             }
