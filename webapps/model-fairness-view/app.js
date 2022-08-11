@@ -4,7 +4,7 @@ let versionId = webAppConfig['versionId'];
 (function() {
     'use strict';
     app.controller('VizController', function($scope, $http, $timeout, ModalService, ChartService) {
-            var chart_list = [];
+            const chartList = [];
             $scope.activeMetric = 'demographicParity';
             $scope.hasResults = false;
 
@@ -49,31 +49,32 @@ let versionId = webAppConfig['versionId'];
 
             $scope.generateChart = function(chosenMetric) {
                 $timeout(function () {
-                    for (var i = 0; i < $scope.populations.length; i++) {
-                        var population = $scope.populations[i]['name'];
-                        var element = $("#bar-chart-"+i);
-                        var bar_chart = ChartService.draw(element, chosenMetric, $scope.histograms[population], $scope.label_list);
-                        chart_list.push(bar_chart);
-                    }
+                    $scope.populations.forEach(function(population, idx) {
+                        const element = $("#bar-chart-" + idx);
+                        const barChart = ChartService.draw(
+                            element, chosenMetric, histograms[population.name], $scope.labelList
+                        );
+                        chartList.push(barChart);
+                    });
                 });
             };
 
+            let histograms;
             $scope.runAnalysis = function () {
                 // remove old charts
-                chart_list.forEach(function(chart) {
+                chartList.forEach(function(chart) {
                     chart.destroy();
                 });
 
                 $scope.loadingAnalysisData = true;
                 $http.get(getWebAppBackendUrl("get-data/"+modelId+"/"+versionId+"/"+$scope.advantageousOutcome+"/"+$scope.sensitiveColumn+"/"+$scope.referenceGroup))
-                    .then(function(response) {
+                    .then(function({data}) {
                         $scope.hasResults = true;
 
-                        $scope.populations = response.data.populations;
-                        $scope.histograms = response.data.histograms;
-                        $scope.disparity = response.data.disparity;
-                        $scope.label_list = response.data.labels;
-                        $scope.population_list = Object.keys($scope.histograms);
+                        $scope.populations = data.populations;
+                        $scope.disparity = data.disparity;
+                        $scope.labelList = data.labels;
+                        histograms = data.histograms;
                         $scope.generateChart('default');
 
                         $scope.loadingAnalysisData = false;

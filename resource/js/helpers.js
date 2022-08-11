@@ -87,14 +87,14 @@
         }
 
         return {
-            draw: function (element, chosenMetric, data, label_list) {
+            draw: function (element, chosenMetric, data, labelList) {
                 const concatted_array = data['predicted_0_true_1'].concat(data['predicted_0_true_0'], data['predicted_1_true_1'], data['predicted_1_true_0']);
                 const max_y = Math.ceil( Math.max.apply(null, concatted_array) / 10) * 10;
                 const label_x = ["0",  "", "", "", "", "", "", "", "", "1"];
 
                 const [ opacity1, opacity2, opacity3, opacity4 ] = metricOpacityMapping[chosenMetric];
 
-                const [ class0, class1 ] = label_list;
+                const [ class0, class1 ] = labelList;
 
                 return new Chart(element, {
                     type: 'bar',
