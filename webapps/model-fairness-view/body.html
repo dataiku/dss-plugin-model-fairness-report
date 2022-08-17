@@ -2,19 +2,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.5/chartjs-plugin-annotation.js"></script>
 <script src="https://cdn.rawgit.com/chartjs/Chart.js/master/samples/utils.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+<script src="/plugins/model-fairness-report/resource/angular.min.js" type="text/javascript"></script>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 <script type="text/javascript">
     var app = angular.module("fairnessReport", []);
 </script>
+
 <script src="/plugins/model-fairness-report/resource/js/helpers.js" type="text/javascript"></script>
-<link rel="stylesheet" href="/static/public/styles/1.0.0/fonts.css" />
-<link rel="stylesheet" href="/static/public/styles/1.0.0/variables.css" />
-<link rel="stylesheet" href="/plugins/model-fairness-report/webapps/model-fairness-view/style.css" />
 
-
-<body  ng-app = "fairnessReport" ng-controller = "vizController" class="report-box">
+<body ng-app="fairnessReport" ng-controller="VizController" class="report-box">
 <div class="container-fluid">
 <div class="view-content text-r">
 <div>Compute fairness metrics by sensitive attribute
@@ -29,9 +27,12 @@ for group
         <option></option>
     </select>
     <div style="display: inline;">
-        <button class="dku-btn dku-btn-primary" id="run-button" type="button" ng-click="runAnalysis()" ng-disabled="sensitiveColumn == undefined || referenceGroup == undefined || advantageousOutcome == undefined" style="color: #FFFFFF;">COMPUTE</button>
-
-        <span class="running-state" style="display: none;">Computing ...</span>
+        <button class="dku-btn dku-btn-primary" id="run-button" type="button" ng-click="runAnalysis()" ng-disabled="loadingAnalysisData || sensitiveColumn == undefined || referenceGroup == undefined || advantageousOutcome == undefined" style="color: #FFFFFF;">
+            COMPUTE
+        </button>
+        <span class="running-state" ng-if="loadingAnalysisData">
+            Computing ...
+        </span>
     </div>
 </div>
 </div>
@@ -44,7 +45,7 @@ for group
      ng-click="removeModal($event)">
 </div>
 
-<div class="landing-page" style="padding-top:16px; padding-bottom:16px ">
+<div class="landing-page" ng-if="!loadingAnalysisData && !hasResults" style="padding-top:16px; padding-bottom:16px ">
     </br> </br> </br>
 <div class="ultralarge-title-sb">
     Model Fairness Report
@@ -54,18 +55,7 @@ for group
 </div>
 </div>
 
-
-<div class="error-page" style="padding-top:16px; padding-bottom:16px; display:none;">
-    </br> </br> </br>
-<div class="ultralarge-title-sb">
-    Model Fairness Report
-</div>
-<div class="grand-title-r">
-    Only binary classification is supported, please choose another model
-</div>
-</div>
-
-<div class="result-state" style="display: none; padding-top:16px; padding-bottom:16px">
+<div class="result-state" ng-if="!loadingAnalysisData && hasResults" style="padding-top:16px; padding-bottom:16px">
 <div class="container-fluid">
     <div class="row">
 <div class="card-deck">
@@ -214,8 +204,5 @@ for group
     </div>
     <hr/>
 </div>
-    </div>
+</div>
 </body>
-
-
-
