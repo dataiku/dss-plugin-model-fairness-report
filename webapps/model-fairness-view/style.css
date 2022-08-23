@@ -1,16 +1,7 @@
 @import '/static/public/styles/1.0.0/variables.css';
 @import '/static/public/styles/1.0.0/fonts.css';
 
-.landing-page {
-    display: flex;
-    flex-direction: column;  /* make main axis vertical */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center;     /* center items horizontally, in this case */
-    margin: auto;
-}
-
 /* Buttons */
-
 .dku-btn {
     font-family: 'SourceSansPro';
     text-transform: uppercase;
@@ -37,8 +28,7 @@
 
 .dku-btn:disabled {
     background-color: #dddddd;
-      cursor: not-allowed;
-          pointer-events: none;
+    cursor: not-allowed;
 }
 
 .dku-btn:active {
@@ -50,6 +40,7 @@
     color: #ffffff;
     border: 1px solid transparent;
 }
+
 .dku-btn-primary:hover {
     background: #62a3f5;
 }
@@ -57,19 +48,10 @@
 .dku-btn-primary:disabled {
     background: #62a3f5;
     cursor: not-allowed;
-    pointer-events: none;
 }
-.dku-btn-primary:active {
+
+.dku-btn-primary:not(:disabled):active {
     background: #22a4d9;
-}
-
-.center {
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
-  padding: 10px;
-
 }
 
 .report-box {
@@ -96,12 +78,30 @@
   margin-left: 8px;
 }
 
-
-
-body{
+body {
     font-family: var(--font-family);
     background-color : var(--grey-lighten-7);
     font-size: 13px;
+}
+
+.padleftright16 {
+    padding: 0 16px;
+}
+
+.padtopbot16 {
+    padding: 16px 0;
+}
+
+.padbot16 {
+    padding-bottom: 16px;
+}
+
+.mbot0 {
+    margin-bottom: 0;
+}
+
+.mtop16 {
+    margin-top: 16px;
 }
 
 html {
@@ -330,35 +330,16 @@ table{
     flex-wrap: wrap;
 }
 
+.info-box:hover {
+    cursor: pointer;
+}
+
 .highlight {
     box-shadow: 0px 0px 2px 1px #3B99FC;
 }
 
-.highlightText {
-    font-weight: normal;
-}
-
 .grayoutText {
     opacity: 0.3;
-}
-
-.info-box > .info-box-item {
-    background: #ffffff;
-    box-shadow: 0px 0px 2px 1px rgba(34, 34, 34, 0.15);
-    box-sizing: border-box;
-    padding: 24px;
-    margin:5px;
-    flex: 1 1 0px;
-}
-
-.info-box > .info-box-text {
-    margin:5px;
-    flex: 1 1 0px;
-}
-
-.break {
-  flex-basis: 100%;
-  height: 0;
 }
 
 canvas {
@@ -366,14 +347,6 @@ canvas {
   -webkit-user-select: none;
   -ms-user-select: none;
 }
-
-.alignleft {
-	float: left;
-}
-.alignright {
-	float: right;
-}
-
 
 /*MODALS*/
 .dku-modal-footer {
@@ -427,10 +400,20 @@ canvas {
     padding-bottom: 12px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     background-color: var(--white);
+    box-sizing: unset;
 }
 
 .dku-modal-title {
     justify-content: space-between;
+}
+
+.icon-grey {
+    color: var(--grey-lighten-2);
+    cursor: pointer;
+}
+
+.icon-grey:hover {
+    color: var(--grey-lighten-4);
 }
 
 .dku-modal-body {
@@ -439,10 +422,9 @@ canvas {
     white-space: pre-line;
     text-align: justify;
     font-size: 14px;
-
 }
 
-.dku-modal-body-error {
+.dku-modal-body--error {
     color: var(--error-red);
 }
 
@@ -456,7 +438,7 @@ canvas {
     max-width: 80%;
 }
 
-.modal-background {
+.dku-modal-background {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -480,7 +462,4 @@ canvas {
     margin-bottom: 2%;
     font-size:16px;
     height: 5%;
-
-.plugin-btn {
-    margin: 12px;
 }
