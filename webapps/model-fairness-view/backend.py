@@ -2,11 +2,12 @@ import logging
 from flask import jsonify
 import traceback
 import dataiku
-from dataiku.core.dkujson import DKUJSONEncoder
 from dataiku.customwebapp import get_webapp_config
 from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 from dku_model_accessor import ModelAccessor, DkuModelAccessorConstants
-from dku_webapp import remove_nan_from_list, get_metrics, get_histograms, DkuWebappConstants
+from dku_webapp import remove_nan_from_list, DKUJSONEncoder, get_metrics, get_histograms, DkuWebappConstants
+
+app.json_encoder = DKUJSONEncoder
 
 logger = logging.getLogger(__name__)
 
