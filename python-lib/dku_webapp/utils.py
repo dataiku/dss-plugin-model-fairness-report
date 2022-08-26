@@ -55,12 +55,6 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     return histogram_dict
 
 
-def convert_numpy_int64_to_int(o):
-    if isinstance(o, np.int64):
-        return int(o)
-    raise TypeError
-
-
 def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
     df = pd.DataFrame()
     # the following strings are used only here, too lazy to turn them into constant variables
