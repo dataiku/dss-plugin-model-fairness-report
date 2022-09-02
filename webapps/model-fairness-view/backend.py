@@ -74,7 +74,7 @@ def get_outcome_list():
         logger.error("When trying to call get-outcome-list endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
 
-@app.route('/get-data/<advantageous_outcome>/<sensitive_column>/<reference_group>')
+@app.route('/get-fairness-data/<advantageous_outcome>/<sensitive_column>/<reference_group>')
 def get_data(advantageous_outcome, sensitive_column, reference_group):
     try:
         if sensitive_column == 'undefined' or sensitive_column == 'null':
@@ -87,7 +87,7 @@ def get_data(advantageous_outcome, sensitive_column, reference_group):
         populations, disparity_dct, label_list = get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group)
         histograms = get_histograms(model_accessor, advantageous_outcome, sensitive_column)
 
-        return jsonify(populations=populations, histograms=histograms, disparity=disparity_dct, labels=label_list)
+        return jsonify(populations=populations, histograms=histograms, disparity=disparity_dct, labels=label_list, referenceGroup=reference_group)
     except:
-        logger.error("When trying to call get-data endpoint: {}.".format(traceback.format_exc()))
+        logger.error("When trying to call get-fairness-data endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500

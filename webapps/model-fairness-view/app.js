@@ -58,13 +58,14 @@
             });
 
             $scope.loadingAnalysisData = true;
-            $http.get(getWebAppBackendUrl(`get-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
+            $http.get(getWebAppBackendUrl(`get-fairness-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
                 .then(function({data}) {
                     $scope.hasResults = true;
 
                     $scope.populations = data.populations;
                     $scope.disparity = data.disparity;
                     $scope.labelList = data.labels;
+                    $scope.currentReferenceGroup = data.referenceGroup;
                     histograms = data.histograms;
                     $scope.generateChart('default');
 
