@@ -86,13 +86,7 @@ def get_data(advantageous_outcome, sensitive_column, reference_group):
 
         populations, disparity_dct, label_list = get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group)
         histograms = get_histograms(model_accessor, advantageous_outcome, sensitive_column)
-        # the following strings are used only here, too lazy to turn them into constant variables
-        data = {
-            'populations': populations,
-            'histograms': histograms,
-            'disparity': disparity_dct,
-            'labels': label_list
-        }
+
         return jsonify(populations=populations, histograms=histograms, disparity=disparity_dct, labels=label_list)
     except:
         logger.error("When trying to call get-data endpoint: {}.".format(traceback.format_exc()))
