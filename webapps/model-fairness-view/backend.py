@@ -52,26 +52,19 @@ def get_value_list(column):
         logger.error("When trying to call get-value-list endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
 
-@app.route('/get-feature-list')
+@app.route('/get-feature-and-outcome-lists')
 def get_feature_list():
     try:
         column_list = model_accessor.get_selected_and_rejected_features()
-        return jsonify(column_list)
-    except:
-        logger.error("When trying to call get-feature-list endpoint: {}.".format(traceback.format_exc()))
-        return "{}Check backend log for more details.".format(traceback.format_exc()), 500
 
-@app.route('/get-outcome-list')
-def get_outcome_list():
-    try:
         # note: sometimes when the dataset is very unbalanced, the original_test_df does not have all the target values
         test_df = model_accessor.get_original_test_df()
         target = model_accessor.get_target_variable()
         outcome_list = test_df[target].unique().tolist()
         filtered_outcome_list = remove_nan_from_list(outcome_list)
-        return jsonify(filtered_outcome_list)
+        return jsonify(featureList=column_list, outcomeList=filtered_outcome_list)
     except:
-        logger.error("When trying to call get-outcome-list endpoint: {}.".format(traceback.format_exc()))
+        logger.error("When trying to call get-feature-and-outcome-lists endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
 
 @app.route('/get-fairness-data/<advantageous_outcome>/<sensitive_column>/<reference_group>')

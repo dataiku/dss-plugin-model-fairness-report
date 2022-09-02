@@ -11,23 +11,17 @@
 
         $http.get(getWebAppBackendUrl("set-model"))
             .then(function() {
-                $http.get(getWebAppBackendUrl("get-feature-list"))
-                    .then(function(response) {
-                        $scope.columnList = response.data;
-                    }, function(e) {
-                        ModalService.createBackendErrorModal($scope, e.data);
-                    });
-
-                $http.get(getWebAppBackendUrl("get-outcome-list"))
-                    .then(function(response) {
-                        $scope.outcomeList = response.data;
+                $http.get(getWebAppBackendUrl("get-feature-and-outcome-lists"))
+                    .then(function({ data }) {
+                        $scope.columnList = data.featureList;
+                        $scope.outcomeList = data.outcomeList;
                         $scope.advantageousOutcome = $scope.outcomeList[0];
                     }, function(e) {
                         ModalService.createBackendErrorModal($scope, e.data);
                     });
-                    }, function(e) {
-                        ModalService.createBackendErrorModal($scope, e.data);
-                    });
+            }, function(e) {
+                ModalService.createBackendErrorModal($scope, e.data);
+            });
 
         $scope.updateValueList = function(){
             $http.get(getWebAppBackendUrl("get-value-list/" + $scope.sensitiveColumn))
