@@ -45,21 +45,21 @@ class ModelFairnessMetric(object):
     def equality_of_opportunity(y_true, y_pred, label_list, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, label_list, sample_weight)
         # Sensitivity, hit rate, recall, or true positive rate
-        true_positive_rate = np.round(true_positive / (true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        true_positive_rate = np.round(true_positive / float(true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return true_positive_rate
 
     @staticmethod
     def equalized_odds(y_true, y_pred, label_list, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, label_list, sample_weight)
-        true_positive_rate = np.round(true_positive / (true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
-        false_positive_rate = np.round(false_positive / (true_negative + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        true_positive_rate = np.round(true_positive / float(true_positive + false_negative), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        false_positive_rate = np.round(false_positive / float(true_negative + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return true_positive_rate, false_positive_rate
 
     @staticmethod
     def predictive_rate_parity(y_true, y_pred, label_list, sample_weight=None):
         true_negative, false_negative, true_positive, false_positive = ModelFairnessMetric._compute_confusion_matrix_metrics(y_true, y_pred, label_list, sample_weight)
         # Precision or positive predictive value
-        positive_predictive_value = np.round(true_positive / (true_positive + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
+        positive_predictive_value = np.round(true_positive / float(true_positive + false_positive), DkuFairnessConstants.NUMBER_OF_DECIMALS)
         return positive_predictive_value
 
 
@@ -106,7 +106,7 @@ def _check_metric_params(y_true, metric_params,
 
     return metric_params_validated
 
-def group_summary(metric_function, y_true, y_pred, *,
+def group_summary(metric_function, y_true, y_pred,
                   sensitive_features,
                   indexed_params=None,
                   **metric_params):

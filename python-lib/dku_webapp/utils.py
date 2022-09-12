@@ -1,4 +1,4 @@
-import dataiku
+import json
 import pandas as pd
 import numpy as np
 import logging
@@ -28,7 +28,7 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     histogram_dict = {}
     for v in df['sensitive_feature'].unique():
         df_sub_ppopulation = df[df['sensitive_feature'] == v]
-        dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / len(df_sub_ppopulation), 3)
+        dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / float(len(df_sub_ppopulation)), 3)
         series_final = dfx.unstack().fillna(0).stack()
 
         computed_df = pd.DataFrame(series_final, columns=['bin_value_new'])
@@ -53,12 +53,6 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
 
 
     return histogram_dict
-
-
-def convert_numpy_int64_to_int(o):
-    if isinstance(o, np.int64):
-        return int(o)
-    raise TypeError
 
 
 def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
@@ -166,7 +160,7 @@ def get_metrics(model_accessor, advantageous_outcome, sensitive_column, referenc
 
         # make sure that NaN is replaced by a string (a dot here), for display purpose
         for k, v in dct.items():
-            if not isinstance(v, str) and np.isnan(v):
+            if pd.isna(v):
                 dct[k] = '.'
         populations.append(dct)
 
@@ -175,3 +169,17 @@ def get_metrics(model_accessor, advantageous_outcome, sensitive_column, referenc
     sorted_populations = sorted(populations, key=lambda population: population[DkuWebappConstants.SIZE], reverse=True)
 
     return sorted_populations, disparity_dct, label_list
+
+class DKUJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.float64):
+            return float(obj)
+        if isinstance(obj, np.int64):
+            return int(obj)
+        if isinstance(obj, (np.ndarray, pd.Series, pd.Index)) and obj.ndim == 1:
+            return obj.tolist()
+        if isinstance(obj, np.generic):
+            return obj.item()
+        if isinstance(obj, pd.DataFrame) :
+            return obj.to_dict(orient='records')
+        return json.JSONEncoder.default(self, obj)

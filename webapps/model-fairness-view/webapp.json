@@ -5,6 +5,7 @@
         "icon": "icon-group"
     },
     "baseType": "STANDARD",
+    "useContextualCodeEnv": true,
     "hasBackend": "true",
     "standardWebAppLibraries": ["dataiku", "font_awesome"],
     "roles": [

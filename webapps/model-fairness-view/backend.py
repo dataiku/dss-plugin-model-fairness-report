@@ -1,11 +1,13 @@
-import dataiku
 import logging
-import simplejson
+from flask import jsonify
 import traceback
+import dataiku
 from dataiku.customwebapp import get_webapp_config
 from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 from dku_model_accessor import ModelAccessor, DkuModelAccessorConstants
-from dku_webapp import remove_nan_from_list, convert_numpy_int64_to_int, get_metrics, get_histograms, DkuWebappConstants
+from dku_webapp import remove_nan_from_list, DKUJSONEncoder, get_metrics, get_histograms, DkuWebappConstants
+
+app.json_encoder = DKUJSONEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def get_value_list(column):
         if len(filtered_value_list) > DkuWebappConstants.MAX_NUM_CATEGORIES:
             raise ValueError('Column "{2}" is either of numerical type or has too many categories ({0}). Max {1} are allowed.'.format(len(filtered_value_list), DkuWebappConstants.MAX_NUM_CATEGORIES, column))
 
-        return simplejson.dumps(filtered_value_list, ignore_nan=True, default=convert_numpy_int64_to_int)
+        return jsonify(filtered_value_list)
     except:
         logger.error("When trying to call get-value-list endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
@@ -54,7 +56,7 @@ def get_value_list(column):
 def get_feature_list():
     try:
         column_list = model_accessor.get_selected_and_rejected_features()
-        return simplejson.dumps(column_list, ignore_nan=True, default=convert_numpy_int64_to_int)
+        return jsonify(column_list)
     except:
         logger.error("When trying to call get-feature-list endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
@@ -67,7 +69,7 @@ def get_outcome_list():
         target = model_accessor.get_target_variable()
         outcome_list = test_df[target].unique().tolist()
         filtered_outcome_list = remove_nan_from_list(outcome_list)
-        return simplejson.dumps(filtered_outcome_list, ignore_nan=True, default=convert_numpy_int64_to_int)
+        return jsonify(filtered_outcome_list)
     except:
         logger.error("When trying to call get-outcome-list endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
@@ -84,14 +86,8 @@ def get_data(advantageous_outcome, sensitive_column, reference_group):
 
         populations, disparity_dct, label_list = get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group)
         histograms = get_histograms(model_accessor, advantageous_outcome, sensitive_column)
-        # the following strings are used only here, too lazy to turn them into constant variables
-        data = {
-            'populations': populations,
-            'histograms': histograms,
-            'disparity': disparity_dct,
-            'labels': label_list
-        }
-        return simplejson.dumps(data, ignore_nan=True, default=convert_numpy_int64_to_int)
+
+        return jsonify(populations=populations, histograms=histograms, disparity=disparity_dct, labels=label_list)
     except:
         logger.error("When trying to call get-data endpoint: {}.".format(traceback.format_exc()))
         return "{}Check backend log for more details.".format(traceback.format_exc()), 500
