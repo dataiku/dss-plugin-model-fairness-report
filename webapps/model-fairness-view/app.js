@@ -26,7 +26,8 @@
         $scope.updateValueList = function(sensitiveColumn) {
             delete $scope.referenceGroup;
             delete $scope.valueList;
-            $http.get(getWebAppBackendUrl("get-value-list/" + sensitiveColumn))
+            const encodedColumn = encodeURIComponent(encodeURIComponent(sensitiveColumn));
+            $http.get(getWebAppBackendUrl("get-value-list/" + encodedColumn))
                 .then(function({data}){
                     $scope.valueList = data
             }, function(e) {
@@ -54,7 +55,10 @@
             });
 
             $scope.loadingAnalysisData = true;
-            $http.get(getWebAppBackendUrl(`get-fairness-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
+            const outcome = encodeURIComponent(encodeURIComponent($scope.advantageousOutcome));
+            const column = encodeURIComponent(encodeURIComponent($scope.sensitiveColumn));
+            const group = encodeURIComponent(encodeURIComponent($scope.referenceGroup));
+            $http.get(getWebAppBackendUrl(`get-fairness-data/${outcome}/${column}/${group}`))
                 .then(function({data}) {
                     $scope.hasResults = true;
 

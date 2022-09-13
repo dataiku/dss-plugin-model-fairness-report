@@ -1,6 +1,12 @@
 import logging
 from flask import jsonify
 import traceback
+try:
+    from urllib.parse import unquote_plus
+except ImportError:
+    # Python 2
+    from urllib import unquote_plus
+
 import dataiku
 from dataiku.customwebapp import get_webapp_config
 from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
@@ -40,6 +46,7 @@ def get_value_list(column):
         if column == 'undefined' or column == 'null':
             raise ValueError('Please choose a column.')
 
+        column = unquote_plus(column)
         test_df = model_accessor.get_original_test_df()
         value_list = test_df[column].unique().tolist()  # should check for categorical variables ?
         filtered_value_list = remove_nan_from_list(value_list)
@@ -77,7 +84,10 @@ def get_data(advantageous_outcome, sensitive_column, reference_group):
         if  advantageous_outcome == 'undefined' or advantageous_outcome == 'null':
             raise ValueError('Please choose an outcome.')
 
-        populations, disparity_dct, label_list = get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group)
+        sensitive_column, reference_group, advantageous_outcome = unquote_plus(sensitive_column), unquote_plus(reference_group), unquote_plus(advantageous_outcome)
+        populations, disparity_dct, label_list = get_metrics(
+            model_accessor, advantageous_outcome, sensitive_column, reference_group
+        )
         histograms = get_histograms(model_accessor, advantageous_outcome, sensitive_column)
 
         return jsonify(populations=populations, histograms=histograms, disparity=disparity_dct, labels=label_list, referenceGroup=reference_group)
