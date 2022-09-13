@@ -74,5 +74,5 @@ class ModelFairnessMetricReport(object):
         def ratio_func(group_metric, reference_metric):
             if any(np.array(reference_metric)) == 0:
                 logger.warning('Reference metric value = 0. Ratio function will return nan or inf.')
-            return group_metric/reference_metric
+            return group_metric / float(reference_metric)
         return self._compute_group_func_from_summary(summary, reference_group, ratio_func)

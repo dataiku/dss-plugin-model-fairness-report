@@ -1,13 +1,10 @@
-import dataiku
+import json
 import pandas as pd
 import numpy as np
 import logging
-from dku_model_accessor import get_model_handler, ModelAccessor
 from dku_model_fairness_report import ModelFairnessMetricReport, ModelFairnessMetric
 from dku_model_fairness_report.constants import DkuFairnessConstants
 from dku_webapp.constants import DkuWebappConstants
-from dataiku.customwebapp import get_webapp_config
-from dataiku.doctor.posttraining.model_information_handler import PredictionModelInformationHandler
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +28,7 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
     histogram_dict = {}
     for v in df['sensitive_feature'].unique():
         df_sub_ppopulation = df[df['sensitive_feature'] == v]
-        dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / len(df_sub_ppopulation), 3)
+        dfx = np.round(100 * df_sub_ppopulation.groupby(['prediction_result_type', 'bin_index']).size() / float(len(df_sub_ppopulation)), 3)
         series_final = dfx.unstack().fillna(0).stack()
 
         computed_df = pd.DataFrame(series_final, columns=['bin_value_new'])
@@ -56,12 +53,6 @@ def get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensi
 
 
     return histogram_dict
-
-
-def convert_numpy_int64_to_int(o):
-    if isinstance(o, np.int64):
-        return int(o)
-    raise TypeError
 
 
 def get_prediction_result_type(y_true, y_pred, advantageous_outcome):
@@ -97,17 +88,7 @@ def remove_nan_from_list(lst):
     return new_list
 
 
-def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column):
-
-    fmi = get_webapp_config().get("trainedModelFullModelId")
-    if fmi is None:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
-    else:
-        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
-        model_accessor = ModelAccessor(original_model_handler)
-
+def get_histograms(model_accessor, advantageous_outcome, sensitive_column):
     raw_test_df = model_accessor.get_original_test_df()
     test_df = raw_test_df.dropna(subset=[sensitive_column])
     target_variable = model_accessor.get_target_variable()
@@ -123,17 +104,7 @@ def get_histograms(model_id, version_id, advantageous_outcome, sensitive_column)
     return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
 
 
-def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, reference_group):
-
-    fmi = get_webapp_config().get("trainedModelFullModelId")
-    if fmi is None:
-        model = dataiku.Model(model_id)
-        model_handler = get_model_handler(model, version_id=version_id)
-        model_accessor = ModelAccessor(model_handler)
-    else:
-        original_model_handler = PredictionModelInformationHandler.from_full_model_id(fmi)
-        model_accessor = ModelAccessor(original_model_handler)
-
+def get_metrics(model_accessor, advantageous_outcome, sensitive_column, reference_group):
     test_df = model_accessor.get_original_test_df()
     target_variable = model_accessor.get_target_variable()
     test_df.dropna(subset=[sensitive_column, target_variable], how='any', inplace=True)
@@ -189,7 +160,7 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
 
         # make sure that NaN is replaced by a string (a dot here), for display purpose
         for k, v in dct.items():
-            if not isinstance(v, str) and np.isnan(v):
+            if pd.isna(v):
                 dct[k] = '.'
         populations.append(dct)
 
@@ -198,3 +169,17 @@ def get_metrics(model_id, version_id, advantageous_outcome, sensitive_column, re
     sorted_populations = sorted(populations, key=lambda population: population[DkuWebappConstants.SIZE], reverse=True)
 
     return sorted_populations, disparity_dct, label_list
+
+class DKUJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.float64):
+            return float(obj)
+        if isinstance(obj, np.int64):
+            return int(obj)
+        if isinstance(obj, (np.ndarray, pd.Series, pd.Index)) and obj.ndim == 1:
+            return obj.tolist()
+        if isinstance(obj, np.generic):
+            return obj.item()
+        if isinstance(obj, pd.DataFrame) :
+            return obj.to_dict(orient='records')
+        return json.JSONEncoder.default(self, obj)

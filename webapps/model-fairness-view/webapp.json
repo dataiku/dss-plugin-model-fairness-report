@@ -5,8 +5,9 @@
         "icon": "icon-group"
     },
     "baseType": "STANDARD",
+    "useContextualCodeEnv": true,
     "hasBackend": "true",
-    "standardWebAppLibraries": ["jquery", "dataiku", "font_awesome"],
+    "standardWebAppLibraries": ["dataiku", "font_awesome"],
     "roles": [
         {
             "type": "SAVED_MODEL",
