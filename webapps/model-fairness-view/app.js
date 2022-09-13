@@ -23,8 +23,10 @@
                 ModalService.createBackendErrorModal($scope, e.data);
             });
 
-        $scope.updateValueList = function(){
-            $http.get(getWebAppBackendUrl("get-value-list/" + $scope.sensitiveColumn))
+        $scope.updateValueList = function(sensitiveColumn) {
+            delete $scope.referenceGroup;
+            delete $scope.valueList;
+            $http.get(getWebAppBackendUrl("get-value-list/" + sensitiveColumn))
                 .then(function({data}){
                     $scope.valueList = data
             }, function(e) {

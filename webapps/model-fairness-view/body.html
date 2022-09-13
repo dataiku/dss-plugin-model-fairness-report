@@ -12,31 +12,49 @@
 
 <script src="/plugins/model-fairness-report/resource/js/helpers.js" type="text/javascript"></script>
 
-<body ng-app="fairnessReport" ng-controller="VizController" class="report-box">
-    <div class="container-fluid">
-        <div class="view-content text-r">
-            <div>
-                Compute fairness metrics by sensitive attribute
-                <select class="box text-r" ng-model="sensitiveColumn"
-                        ng-options="col for col in columnList" ng-change="updateValueList()">
-                </select>
-                for group
-                <select class="box text-r" ng-model="referenceGroup" ng-options="val for val in valueList">
-                </select>
-                and positive outcome
-                <select class="box2 text-r" ng-model="advantageousOutcome" ng-options="outcome for outcome in outcomeList">
-                </select>
-                <div style="display: inline;">
-                    <button class="dku-btn dku-btn-primary" id="run-button" type="button" ng-click="runAnalysis()"
-                            ng-disabled="loadingAnalysisData || sensitiveColumn == undefined || referenceGroup == undefined || advantageousOutcome == undefined">
-                        COMPUTE
-                    </button>
-                    <span class="running-state" ng-if="loadingAnalysisData">
-                        Computing ...
-                    </span>
-                </div>
+<body ng-app="fairnessReport" ng-controller="VizController"
+      ng-click="$broadcast('closeDropdowns', $event.target)"
+      ng-keyup="($event.keyCode === 27) && $broadcast('closeDropdowns')" class="report-box">
+    <div class="container-fluid text-r padbot16">
+        <form class="flex aic">
+            Compute fairness metrics by
+            <div custom-dropdown
+                id="sensitive-column"
+                possible-values="columnList"
+                on-change="updateValueList"
+                item="sensitiveColumn"
+                item-name="column"
+                label="sensitive attribute"
+                class="settings__form_field">
             </div>
-        </div>
+            for
+            <div custom-dropdown
+                id="reference-group"
+                possible-values="valueList"
+                item="referenceGroup"
+                item-name="group"
+                label="group"
+                class="settings__form_field">
+            </div>
+            and
+            <div custom-dropdown
+                id="advantageous-outcome"
+                possible-values="outcomeList"
+                item="advantageousOutcome"
+                item-name="group"
+                label="positive outcome"
+                class="settings__form_field">
+            </div>
+            <div>
+                <button class="dku-btn dku-btn-primary" id="run-button" type="button" ng-click="runAnalysis()"
+                        ng-disabled="loadingAnalysisData || advantageousOutcome == undefined || referenceGroup == null || sensitiveColumn == null">
+                    COMPUTE
+                </button>
+                <span class="running-state" ng-if="loadingAnalysisData">
+                    Computing ...
+                </span>
+            </div>
+        </form>
     </div>
 
     <div class="padtopbot16" ng-if="!loadingAnalysisData && !hasResults">
@@ -46,7 +64,7 @@
         </div>
     </div>
 
-    <div class="result-state padtopbot16" ng-if="!loadingAnalysisData && hasResults">
+    <div class="result-state" ng-if="!loadingAnalysisData && hasResults">
         <div class="container-fluid">
             <div class="row">
                 <div class="card-deck">
@@ -136,8 +154,8 @@
         <hr/>
 
         <div class="container-fluid" ng-repeat= "population in populations track by $index">
-        <div class="small-title-sb">Population: {{population.name}} - {{population.size}} observations</div>
-        <div class="row" style="padding-top: 16px;">
+        <div class="small-title-sb padbot16">Population: {{population.name}} - {{population.size}} observations</div>
+        <div class="row">
             <div class="col-5">
                 <div>
                     <canvas id="bar-chart-{{ $index }}"></canvas>
