@@ -11,23 +11,17 @@
 
         $http.get(getWebAppBackendUrl("set-model"))
             .then(function() {
-                $http.get(getWebAppBackendUrl("get-feature-list"))
-                    .then(function(response) {
-                        $scope.columnList = response.data;
-                    }, function(e) {
-                        ModalService.createBackendErrorModal($scope, e.data);
-                    });
-
-                $http.get(getWebAppBackendUrl("get-outcome-list"))
-                    .then(function(response) {
-                        $scope.outcomeList = response.data;
+                $http.get(getWebAppBackendUrl("get-feature-and-outcome-lists"))
+                    .then(function({ data }) {
+                        $scope.columnList = data.featureList;
+                        $scope.outcomeList = data.outcomeList;
                         $scope.advantageousOutcome = $scope.outcomeList[0];
                     }, function(e) {
                         ModalService.createBackendErrorModal($scope, e.data);
                     });
-                    }, function(e) {
-                        ModalService.createBackendErrorModal($scope, e.data);
-                    });
+            }, function(e) {
+                ModalService.createBackendErrorModal($scope, e.data);
+            });
 
         $scope.updateValueList = function(){
             $http.get(getWebAppBackendUrl("get-value-list/" + $scope.sensitiveColumn))
@@ -58,13 +52,14 @@
             });
 
             $scope.loadingAnalysisData = true;
-            $http.get(getWebAppBackendUrl(`get-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
+            $http.get(getWebAppBackendUrl(`get-fairness-data/${$scope.advantageousOutcome}/${$scope.sensitiveColumn}/${$scope.referenceGroup}`))
                 .then(function({data}) {
                     $scope.hasResults = true;
 
                     $scope.populations = data.populations;
                     $scope.disparity = data.disparity;
                     $scope.labelList = data.labels;
+                    $scope.currentReferenceGroup = data.referenceGroup;
                     histograms = data.histograms;
                     $scope.generateChart('default');
 
