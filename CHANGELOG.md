@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.0.9 - 2025-06
+- Fix bug when dropping rows during the preprocessing
+
 ## Version 1.0.8 - 2022-09-13
 - In the model view, use the code env that was used to train the model
   - No need to build a Python 3.6 code env anymore
