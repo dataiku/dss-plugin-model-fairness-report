@@ -1,10 +1,10 @@
 {
     "id": "model-fairness-report",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "meta": {
         "label": "Model Fairness Report",
         "description": "Get insight on the fairness of a model.",
-        "author": "Dataiku (Du PHAN)",
+        "author": "Dataiku",
         "icon": "icon-group",
         "licenseInfo": "Apache Software License",
         "url": "https://www.dataiku.com/product/plugins/model-fairness-report/",
