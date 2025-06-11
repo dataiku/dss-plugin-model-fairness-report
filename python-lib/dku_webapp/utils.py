@@ -93,13 +93,13 @@ def get_histograms(model_accessor, advantageous_outcome, sensitive_column):
     test_df = raw_test_df.dropna(subset=[sensitive_column])
     target_variable = model_accessor.get_target_variable()
 
-    y_true = test_df.loc[:, target_variable]
     pred_df = model_accessor.predict(test_df)
+    y_true = test_df.iloc[pred_df.index].loc[:, target_variable]
     y_pred = pred_df.loc[:, DkuWebappConstants.PREDICTION]
 
     advantageous_outcome_proba_col = 'proba_{}'.format(advantageous_outcome)
     y_pred_proba = pred_df.loc[:, advantageous_outcome_proba_col]
-    sensitive_feature_values = test_df[sensitive_column]
+    sensitive_feature_values = test_df.iloc[pred_df.index][sensitive_column]
 
     return get_histogram_data(y_true, y_pred, y_pred_proba, advantageous_outcome, sensitive_feature_values)
 
@@ -109,10 +109,9 @@ def get_metrics(model_accessor, advantageous_outcome, sensitive_column, referenc
     target_variable = model_accessor.get_target_variable()
     test_df.dropna(subset=[sensitive_column, target_variable], how='any', inplace=True)
 
-    y_true = test_df.loc[:, target_variable]
     pred_df = model_accessor.predict(test_df)
+    y_true = test_df.iloc[pred_df.index].loc[:, target_variable]
     y_pred = pred_df.loc[:, DkuWebappConstants.PREDICTION]
-
 
     try: # check whether or not the column can be casted to int
         if np.array_equal(test_df[sensitive_column], test_df[sensitive_column].astype(int)):
@@ -124,8 +123,8 @@ def get_metrics(model_accessor, advantageous_outcome, sensitive_column, referenc
     except Exception as e:
         logger.info('Sensitive column can not be casted to int. ', e)
         pass
-
-    sensitive_feature_values = test_df[sensitive_column]
+    
+    sensitive_feature_values = test_df.iloc[pred_df.index][sensitive_column]
     model_report = ModelFairnessMetricReport(y_true, y_pred, sensitive_feature_values, advantageous_outcome)
     population_names = sensitive_feature_values.unique()
 
